@@ -33,30 +33,103 @@ Além disso, a aplicação deve organizar esses dados de forma intuitiva, promov
 | 9 | Média | Ranking de Deputados | Como jornalista, quero visualizar um ranking de deputados com base em indicadores para identificar padrões de atuação | 3 |
 | 10 | Baixa | Favoritar Deputados | Como eleitor, quero favoritar deputados para acompanhar suas informações com mais facilidade | 3 |
 | 11 | Baixa | Compartilhamento de Informações | Como jornalista, quero compartilhar dados sobre deputados para divulgar informações relevantes | 3 |
-## 🏃 Sprints
 
-### Sprint 1
-- [ ] Levantamento e análise de requisitos do sistema;
+## Definition of Ready (DoR)
 
-- [ ] Criação do protótipo das telas no Figma;
+- Tarefa bem descrita
+- Tem objetivo claro
+- Tem critérios de aceitação definidos
+- Tem tempo estimado para conclusão
+- Está compreensível para o time
 
-- [ ] Desenvolvimento da listagem de deputados (com busca por nome);
+## Definition of Done (DoD)
 
-- [ ] Implementação da página de perfil do deputado;
+- Funciona sem erros
+- Foi testada
+- Foi implementada conforme os requisitos propostos
+- Interface de acordo com o protótipo (Figma)
+- Código revisado com a equipe
+- Integração com o projeto
+- Arquivos no Git hub
 
-- [ ] Exibição dos principais indicadores (presença, gastos e projetos);
 
-- [ ] Estruturação inicial do back-end e integração com API de dados públicos;
+## 📅 Cronograma de Sprints
 
-- [ ] Configuração do ambiente de desenvolvimento.
+| Sprint          |    Período    | Documentação                                     |
+| --------------- | :-----------: | ------------------------------------------------ |
+| 🔖 **SPRINT 1** | 16/03 - 05/04 | [Sprint 1 Docs](./docs/sprints/sprint-1/README.md) |
+| 🔖 **SPRINT 2** | 13/04 - 03/05 | [Sprint 2 Docs](./docs/sprints/sprint-2/README.md) |
+| 🔖 **SPRINT 3** | 11/05 - 31/05 | [Sprint 3 Docs](./docs/sprints/sprint-3/README.md) |
 
 ## 🛠 Tecnologias Utilizadas
 
 | ![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white) | ![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white) | ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black) | ![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54) |
 | --- | --- | --- | --- |
 | ![Flask](https://img.shields.io/badge/flask-%23000.svg?style=for-the-badge&logo=flask&logoColor=white) | ![MySQL](https://img.shields.io/badge/mysql-4479A1.svg?style=for-the-badge&logo=mysql&logoColor=white) | ![FIGMA](https://img.shields.io/badge/Figma-0D1117?style=for-the-badge&logo=figma) | ![Jira](https://img.shields.io/badge/jira-%230A0FFF.svg?style=for-the-badge&logo=jira&logoColor=white) |
- 
-
-## 📚 Documentação
 
 ## 👥 Equipe
+
+<div align="left">
+  <table>
+    <tr>
+      <th>Membro</th>
+      <th>Função</th>
+      <th>Github</th>
+      <th>Linkedin</th>
+    </tr>
+    <tr>
+      <td>Lavínia Martins</td>
+      <td>Product Owner</td>
+      <td><a href="https://github.com/MartinsLavinia"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a></td>
+      <td><a href="https://www.linkedin.com/in/lavinia-martins221/"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white"></a></td>
+    </tr>
+    <tr>
+      <td>Jônatas Eugênio</td>
+      <td>Scrum Master</td>
+      <td><a href="https://github.com/eugeniojonatas"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a></td>
+      <td><a href="https://www.linkedin.com/in/jonatas-eugenio"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white"></a></td>
+    </tr>
+    <tr>
+      <td>Pedro Davies</td>
+      <td>Desenvolvedor</td>
+      <td><a href="https://github.com/daviespedro"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a></td>
+      <td><a href="https://www.linkedin.com/in/pedro-augusto-davies-gon%C3%A7alves-4554293b0/"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white"></a></td>
+    </tr>
+    <tr>
+      <td>Nicolas De Oliveira</td>
+      <td>Desenvolvedor</td>
+      <td><a href="https://github.com/NicolasXy"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a></td>
+      <td><a href="https://www.linkedin.com/in/nicolas-de-oliveira-malibu/"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white"></a></td>
+    </tr>
+    <tr>
+      <td>Lucas Lemes</td>
+      <td>Desenvolvedor</td>
+      <td><a href="https://github.com/lucasfisioramos-cmyk"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a></td>
+      <td><a href="https://www.linkedin.com/in/lucas-lemes-ramos-9a9661251/"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white"></a></td>
+    </tr>
+    <tr>
+      <td>Giovanna Noccerino</td>
+      <td>Desenvolvedor</td>
+      <td><a href="https://github.com/GiNDF"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a></td>
+      <td><a href=""><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white"></a></td>
+    </tr>
+    <tr>
+      <td>Heitor da Hora</td>
+      <td>Desenvolvedor</td>
+      <td><a href="https://github.com/heitorhora1910"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a></td>
+      <td><a href="https://www.linkedin.com/in/heitor-da-hora-206051400/"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white"></a></td>
+    </tr>
+   <tr>
+      <td>Pedro Rebecca</td>
+      <td>Desenvolvedor</td>
+      <td><a href="https://github.com/"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a></td>
+      <td><a href="https://www.linkedin.com/in/pedro-lima-716015219"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white"></a></td>
+    </tr>
+   <tr>
+      <td>Guilherme Moraes</td>
+      <td>Desenvolvedor</td>
+      <td><a href="https://github.com/guilherm3hmoraes"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a></td>
+      <td><a href=""><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white"></a></td>
+    </tr>
+  </table>
+</div>
