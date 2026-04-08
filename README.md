@@ -9,10 +9,9 @@ Além disso, a aplicação deve organizar esses dados de forma intuitiva, promov
 ## 📌 Índice
 
 - [Backlog do Produto](#backlog-do-produto)
-- [Sprints](#sprints)
-- [Tecnologias Utilizadas](#tecnologias-utilizadas)
-- [Documentação](#documentacao)
-- [Equipe](#equipe)
+- [Cronograma de Sprints](#-cronograma-de-sprints)
+- [Tecnologias Utilizadas](#-tecnologias-utilizadas)
+- [Equipe](#-equipe)
 
 ## 📋 Backlog do Produto
 ### 🔗 Clique no link abaixo para visualizar o backlog do produto.
@@ -67,6 +66,10 @@ Além disso, a aplicação deve organizar esses dados de forma intuitiva, promov
 | --- | --- | --- | --- |
 | ![Flask](https://img.shields.io/badge/flask-%23000.svg?style=for-the-badge&logo=flask&logoColor=white) | ![MySQL](https://img.shields.io/badge/mysql-4479A1.svg?style=for-the-badge&logo=mysql&logoColor=white) | ![FIGMA](https://img.shields.io/badge/Figma-0D1117?style=for-the-badge&logo=figma) | ![Jira](https://img.shields.io/badge/jira-%230A0FFF.svg?style=for-the-badge&logo=jira&logoColor=white) |
 
+## MVP - Sprint 1
+
+[![Assista ao vídeo](https://img.youtube.com/vi/RNZoiRHVe1s/0.jpg)](https://www.youtube.com/watch?v=RNZoiRHVe1s)
+
 ## 👥 Equipe
 
 <div align="left">
@@ -111,7 +114,7 @@ Além disso, a aplicação deve organizar esses dados de forma intuitiva, promov
       <td>Giovanna Noccerino</td>
       <td>Desenvolvedor</td>
       <td><a href="https://github.com/GiNDF"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a></td>
-      <td><a href=""><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white"></a></td>
+      <td><a href="https://br.linkedin.com/in/giovanna-noccerino-de-freitas-221aa8401"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white"></a></td>
     </tr>
     <tr>
       <td>Heitor da Hora</td>
@@ -122,14 +125,14 @@ Além disso, a aplicação deve organizar esses dados de forma intuitiva, promov
    <tr>
       <td>Pedro Rebecca</td>
       <td>Desenvolvedor</td>
-      <td><a href="https://github.com/"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a></td>
+      <td><a href="https://github.com/pedrorml07"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a></td>
       <td><a href="https://www.linkedin.com/in/pedro-lima-716015219"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white"></a></td>
     </tr>
    <tr>
       <td>Guilherme Moraes</td>
       <td>Desenvolvedor</td>
       <td><a href="https://github.com/guilherm3hmoraes"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a></td>
-      <td><a href=""><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white"></a></td>
+      <td><a href="https://www.linkedin.com/in/guilherme-henrique-moraes-227a163bb"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white"></a></td>
     </tr>
   </table>
 </div>

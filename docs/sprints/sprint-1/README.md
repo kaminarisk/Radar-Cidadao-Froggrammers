@@ -1,6 +1,6 @@
 # 📅 Documentação - Sprint 1
 
-> Status da Sprint: Em andamento 🟡
+> Status da Sprint: Finalizada 🟢
 
 ## 🏅 Desafio
 
@@ -16,11 +16,11 @@ O foco também está na organização das informações de forma intuitiva, util
 
 | Rank | Prioridade | User Story | Sprint | Status |
 |------|-----------|------------|--------|--------|
-| 1 | Alta | Como eleitor, quero visualizar uma página com todos os deputados exibidos por foto e também poder buscar pelo nome para encontrar facilmente um parlamentar | 1 | 🟡 |
-| 2 | Alta | Como eleitor ou jornalista, quero acessar o perfil detalhado de um deputado para entender melhor sua atuação parlamentar | 1 | 🟡 |
-| 3 | Alta | Como eleitor, quero visualizar um resumo do desempenho de um deputado para entender rapidamente sua atuação | 1 | 🟡 |
-| 4 | Alta | Como jornalista, quero visualizar os gastos parlamentares de um deputado para analisar o uso de recursos públicos | 1 | 🟡 |
-| 5 | Alta | Como professor, quero visualizar gráficos das atividades parlamentares para facilitar a explicação dos dados em aula | 1 | 🟡 |
+| 1 | Alta | Como eleitor, quero visualizar uma página com todos os deputados exibidos por foto e também poder buscar pelo nome para encontrar facilmente um parlamentar (META) | 1 | 🟢 |
+| 2 | Alta | Como eleitor ou jornalista, quero acessar o perfil detalhado de um deputado para entender melhor sua atuação parlamentar | 1 | 🟢 |
+| 3 | Alta | Como eleitor, quero visualizar um resumo do desempenho de um deputado para entender rapidamente sua atuação | 1 | 🟢 |
+| 4 | Alta | Como jornalista, quero visualizar os gastos parlamentares de um deputado para analisar o uso de recursos públicos | 1 | 🟢 |
+| 5 | Alta | Como professor, quero visualizar gráficos das atividades parlamentares para facilitar a explicação dos dados em aula | 1 | 🟢 |
 
 ---
 
@@ -94,7 +94,7 @@ O foco também está na organização das informações de forma intuitiva, util
       <td>Giovanna Noccerino</td>
       <td>Desenvolvedor</td>
       <td><a href="https://github.com/GiNDF"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a></td>
-      <td><a href=""><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white"></a></td>
+      <td><a href="https://br.linkedin.com/in/giovanna-noccerino-de-freitas-221aa8401"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white"></a></td>
     </tr>
     <tr>
       <td>Heitor da Hora</td>
@@ -105,14 +105,14 @@ O foco também está na organização das informações de forma intuitiva, util
    <tr>
       <td>Pedro Rebecca</td>
       <td>Desenvolvedor</td>
-      <td><a href="https://github.com/"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a></td>
+      <td><a href="https://github.com/pedrorml07"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a></td>
       <td><a href="https://www.linkedin.com/in/pedro-lima-716015219"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white"></a></td>
     </tr>
    <tr>
       <td>Guilherme Moraes</td>
       <td>Desenvolvedor</td>
       <td><a href="https://github.com/guilherm3hmoraes"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a></td>
-      <td><a href=""><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white"></a></td>
+      <td><a href="https://www.linkedin.com/in/guilherme-henrique-moraes-227a163bb"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white"></a></td>
     </tr>
   </table>
 </div>
