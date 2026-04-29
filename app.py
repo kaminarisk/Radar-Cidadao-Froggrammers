@@ -1,15 +1,11 @@
-from flask import Flask, jsonify, render_template, send_from_directory
+from flask import Flask, jsonify, render_template
 import requests
-import os
 
-base_dir = os.path.dirname(os.path.abspath(__file__))
+app = Flask(__name__)
 
-app = Flask(
-    __name__,
-    template_folder=base_dir,
-    static_folder=base_dir,
-    static_url_path=""
-)
+# =========================
+# ROTAS HTML
+# =========================
 
 @app.route("/")
 def index():
@@ -19,13 +15,31 @@ def index():
 def perfil():
     return render_template("perfil.html")
 
+@app.route("/graficos.html")
+def graficos():
+    return render_template("graficos.html")
+
+@app.route("/relatorios.html")
+def relatorios():
+    return render_template("relatorios.html")
+
+# =========================
+# API
+# =========================
+
 @app.route("/api/deputados")
 def deputados():
-    r = requests.get(
-        "https://dadosabertos.camara.leg.br/api/v2/deputados?ordem=ASC&ordenarPor=nome"
-    )
-    return jsonify(r.json())
+    try:
+        r = requests.get(
+            "https://dadosabertos.camara.leg.br/api/v2/deputados?ordem=ASC&ordenarPor=nome"
+        )
+        return jsonify(r.json())
+    except:
+        return jsonify({"erro": "falha ao buscar dados"}), 500
 
-@app.route("/<path:filename>")
-def static_files(filename):
-    return send_from_directory(base_dir, filename)
+# =========================
+# START
+# =========================
+
+if __name__ == "__main__":
+    app.run(debug=True)
