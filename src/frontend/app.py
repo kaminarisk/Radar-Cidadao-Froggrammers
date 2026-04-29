@@ -1,7 +1,15 @@
-from flask import Flask, jsonify, render_template
+import os
 import requests
+from flask import Flask, jsonify, render_template
 
-app = Flask(__name__)
+base_dir = os.path.dirname(os.path.abspath(__file__))
+
+app = Flask(
+    __name__,
+    template_folder=os.path.join(base_dir, "src/frontend/templates"),
+    static_folder=os.path.join(base_dir, "src/frontend/static"),
+    static_url_path="/static"
+)
 
 # =========================
 # ROTAS HTML
@@ -10,6 +18,10 @@ app = Flask(__name__)
 @app.route("/")
 def index():
     return render_template("index.html")
+
+@app.route("/deputados.html")
+def deputados_page():
+    return render_template("deputados.html")
 
 @app.route("/perfil.html")
 def perfil():
@@ -31,11 +43,12 @@ def relatorios():
 def deputados():
     try:
         r = requests.get(
-            "https://dadosabertos.camara.leg.br/api/v2/deputados?ordem=ASC&ordenarPor=nome"
+            "https://dadosabertos.camara.leg.br/api/v2/deputados?ordem=ASC&ordenarPor=nome",
+            timeout=10
         )
         return jsonify(r.json())
-    except:
-        return jsonify({"erro": "falha ao buscar dados"}), 500
+    except Exception as e:
+        return jsonify({"erro": str(e)}), 500
 
 # =========================
 # START
