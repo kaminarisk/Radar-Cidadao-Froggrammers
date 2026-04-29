@@ -11,11 +11,20 @@
     --radius: 12px;
 }
 
-* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+}
 
-body { background-color: var(--bg); color: var(--text-dark); line-height: 1.6; }
+body {
+    background: var(--bg);
+    color: var(--text-dark);
+    line-height: 1.6;
+}
 
-/* Navegação Padronizada */
+/* NAVBAR */
 .navbar {
     background: var(--primary);
     padding: 0 10%;
@@ -29,35 +38,56 @@ body { background-color: var(--bg); color: var(--text-dark); line-height: 1.6; }
     box-shadow: 0 2px 10px rgba(0,0,0,0.2);
 }
 
-.logo { font-size: 1.5rem; font-weight: 800; color: white; text-decoration: none; }
-.logo span { color: var(--secondary); }
-
-.nav-links { display: flex; list-style: none; gap: 25px; }
-.nav-links a { 
-    color: rgba(255,255,255,0.8); 
-    text-decoration: none; 
-    font-size: 0.95rem; 
-    font-weight: 500;
-    transition: 0.3s;
-    padding: 8px 12px;
-    border-radius: 6px;
+.logo {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: white;
+    text-decoration: none;
 }
 
-.nav-links a:hover, .nav-links a.active { color: white; background: rgba(255,255,255,0.1); }
+.logo span {
+    color: var(--secondary);
+}
 
-/* Containers */
-.container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
+.nav-links {
+    display: flex;
+    list-style: none;
+    gap: 25px;
+}
 
-/* Cards Genéricos */
+.nav-links a {
+    color: rgba(255,255,255,0.8);
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-weight: 500;
+    padding: 8px 12px;
+    border-radius: 6px;
+    transition: 0.3s;
+}
+
+.nav-links a:hover,
+.nav-links a.active {
+    color: white;
+    background: rgba(255,255,255,0.1);
+}
+
+/* CONTAINER */
+.container {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+/* CARDS */
 .card {
     background: var(--white);
     border-radius: var(--radius);
-    padding: 30px;
+    padding: 25px;
     box-shadow: var(--shadow);
     border: 1px solid rgba(0,0,0,0.05);
 }
 
-/* Botões */
+/* BOTÕES */
 .btn {
     padding: 12px 24px;
     border-radius: 8px;
@@ -69,12 +99,24 @@ body { background-color: var(--bg); color: var(--text-dark); line-height: 1.6; }
     display: inline-block;
 }
 
-.btn-primary { background: var(--primary); color: white; }
-.btn-primary:hover { background: var(--primary-light); transform: translateY(-2px); }
+.btn-primary {
+    background: var(--primary);
+    color: white;
+}
 
-/* Grid de Vereadores */
-.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; }
+.btn-primary:hover {
+    background: var(--primary-light);
+    transform: translateY(-2px);
+}
 
+/* GRID */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 30px;
+}
+
+/* CARDS DE DEPUTADO */
 .v-card {
     background: var(--white);
     border-radius: var(--radius);
@@ -83,10 +125,67 @@ body { background-color: var(--bg); color: var(--text-dark); line-height: 1.6; }
     text-align: center;
 }
 
-.v-card:hover { transform: translateY(-8px); box-shadow: 0 12px 20px rgba(0,0,0,0.1); }
-.v-card img { width: 100%; height: 320px; object-fit: cover; }
-.v-card-body { padding: 20px; }
-.v-card h3 { margin-bottom: 5px; color: var(--primary); }
+.v-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 20px rgba(0,0,0,0.1);
+}
 
-/* Footer */
-footer { text-align: center; padding: 40px; color: var(--text-light); font-size: 0.9rem; }
+.v-card img {
+    width: 100%;
+    height: 320px;
+    object-fit: cover;
+}
+
+.v-card-body {
+    padding: 20px;
+}
+
+.v-card h3 {
+    margin-bottom: 5px;
+    color: var(--primary);
+}
+
+/* HERO */
+.hero {
+    border-radius: 0 0 20px 20px;
+}
+
+/* TABELAS */
+table {
+    width: 100%;
+}
+
+th, td {
+    font-size: 0.9rem;
+}
+
+/* FOOTER */
+footer {
+    text-align: center;
+    padding: 40px;
+    color: var(--text-light);
+    font-size: 0.9rem;
+}
+
+/* RESPONSIVO */
+@media (max-width: 768px) {
+    .navbar {
+        padding: 0 5%;
+    }
+
+    .nav-links {
+        gap: 15px;
+    }
+
+    .container {
+        margin: 20px auto;
+    }
+
+    .card {
+        padding: 20px;
+    }
+
+    .v-card img {
+        height: 250px;
+    }
+}
