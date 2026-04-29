@@ -14,8 +14,8 @@
         <nav>
             <ul class="nav-links">
                 <li><a href="/">Home</a></li>
-                <li><a href="/">Deputados</a></li>
-                <li><a href="#">Relatórios</a></li>
+                <li><a href="/deputados.html">Deputados</a></li>
+                <li><a href="/relatorios.html">Relatórios</a></li>
                 <li><a href="/graficos.html">Gráficos</a></li>
             </ul>
         </nav>
@@ -121,7 +121,7 @@
                 document.getElementById('dep-partido').innerText = d.siglaPartido;
                 document.getElementById('dep-uf').innerText = d.siglaUf;
 
-                img.src = d.urlFoto;
+                img.src = d.urlFoto + "?v=" + Date.now(); // evita bug de cache
                 img.style.display = 'block';
                 txt.style.display = 'none';
 
@@ -150,7 +150,7 @@
 
                         const json = await res.json();
 
-                        if (!json.dados.length) {
+                        if (!json.dados || json.dados.length === 0) {
                             continuar = false;
                         } else {
                             lista = lista.concat(json.dados);
@@ -180,14 +180,14 @@
             tabela.innerHTML = dados.map(g => {
                 soma += g.valorLiquido;
 
+                let data = g.dataDocumento 
+                    ? g.dataDocumento.substring(0,10).split('-').reverse().join('/')
+                    : `01/${String(g.mes).padStart(2,'0')}/${g.ano}`;
+
                 return `
                 <tr>
-                    <td style="padding:10px;">
-                        ${g.dataDocumento || g.mes + "/" + g.ano}
-                    </td>
-                    <td style="padding:10px;">
-                        ${g.tipoDespesa}
-                    </td>
+                    <td style="padding:10px;">${data}</td>
+                    <td style="padding:10px;">${g.tipoDespesa}</td>
                     <td style="padding:10px; text-align:right;">
                         ${g.valorLiquido.toLocaleString('pt-br',{style:'currency',currency:'BRL'})}
                     </td>
