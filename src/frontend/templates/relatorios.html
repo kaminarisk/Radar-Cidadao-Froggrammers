@@ -14,7 +14,7 @@
         <nav>
             <ul class="nav-links">
                 <li><a href="/">Home</a></li>
-                <li><a href="/">Deputados</a></li>
+                <li><a href="/deputados.html">Deputados</a></li>
                 <li><a href="/relatorios.html" class="active">Relatórios</a></li>
                 <li><a href="/graficos.html">Gráficos</a></li>
             </ul>
@@ -92,6 +92,15 @@
                 return;
             }
 
+            const tabela = document.getElementById('resultado-tabela');
+            tabela.innerHTML = `
+                <tr>
+                    <td colspan="2" style="padding:20px; text-align:center;">
+                        Carregando...
+                    </td>
+                </tr>
+            `;
+
             try {
                 const res = await fetch(
                     `https://dadosabertos.camara.leg.br/api/v2/deputados/${id}/despesas?ano=${ano}&itens=100`
@@ -106,7 +115,16 @@
                         (resumo[g.tipoDespesa] || 0) + g.valorLiquido;
                 });
 
-                const tabela = document.getElementById('resultado-tabela');
+                if (Object.keys(resumo).length === 0) {
+                    tabela.innerHTML = `
+                        <tr>
+                            <td colspan="2" style="padding:20px; text-align:center;">
+                                Nenhum dado encontrado
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
 
                 tabela.innerHTML = Object.keys(resumo).map(cat => `
                     <tr style="border-bottom:1px solid #eee;">
@@ -118,7 +136,7 @@
                 `).join('');
 
             } catch (e) {
-                document.getElementById('resultado-tabela').innerHTML = `
+                tabela.innerHTML = `
                     <tr>
                         <td colspan="2" style="padding:20px; text-align:center; color:red;">
                             Erro ao carregar dados
