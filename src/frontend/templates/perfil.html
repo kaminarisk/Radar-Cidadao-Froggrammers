@@ -2,204 +2,176 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Perfil Parlamentar | Portal SJC</title>
+    <title>Perfil Parlamentar | RADAR CIDADAO SJC</title>
 
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 
 <body>
-    <header class="navbar">
-        <a href="/" class="logo">PORTAL<span>SJC</span></a>
+<header class="navbar">
+    <a href="/" class="logo">PORTAL<span>SJC</span></a>
 
-        <nav>
-            <ul class="nav-links">
-                <li><a href="/">Home</a></li>
-                <li><a href="/deputados.html">Deputados</a></li>
-                <li><a href="/relatorios.html">Relatórios</a></li>
-                <li><a href="/graficos.html">Gráficos</a></li>
-            </ul>
-        </nav>
-    </header>
+    <nav>
+        <ul class="nav-links">
+            <li><a href="/">Home</a></li>
+            <li><a href="/deputados.html">Deputados</a></li>
+            <li><a href="/relatorios.html">Relatórios</a></li>
+            <li><a href="/graficos.html">Gráficos</a></li>
+        </ul>
+    </nav>
+</header>
 
-    <main class="container">
-        <div id="main-content"
-             style="display:grid; grid-template-columns:320px 1fr; gap:30px; margin-top:20px;">
+<main class="container">
+<div style="display:grid; grid-template-columns:320px 1fr; gap:30px; margin-top:20px;">
 
-            <aside>
-                <div class="card" style="text-align:center; position:sticky; top:20px;">
+<aside>
+<div class="card" style="text-align:center; position:sticky; top:20px;">
 
-                    <div id="wrapper-foto"
-                         style="min-height:250px; background:#f0f0f0; border-radius:8px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
-                        
-                        <img id="dep-foto" style="width:100%; border-radius:8px; display:none;">
-                        <span id="txt-foto">Carregando foto...</span>
-                    </div>
+<div style="min-height:250px; background:#f0f0f0; border-radius:8px; display:flex; align-items:center; justify-content:center;">
+    <img id="dep-foto" style="width:100%; border-radius:8px; display:none;">
+    <span id="txt-foto">Carregando foto...</span>
+</div>
 
-                    <h2 id="dep-nome" style="margin:15px 0; color:var(--primary);">
-                        Buscando...
-                    </h2>
+<h2 id="dep-nome" style="margin:15px 0; color:var(--primary);">
+    Carregando...
+</h2>
 
-                    <div style="text-align:left; padding:10px; background:#f9f9f9; border-radius:5px;">
-                        <p><strong>Partido:</strong> <span id="dep-partido">-</span></p>
-                        <p><strong>UF:</strong> <span id="dep-uf">-</span></p>
-                    </div>
+<div style="text-align:left; padding:10px; background:#f9f9f9; border-radius:5px;">
+    <p><strong>Partido:</strong> <span id="dep-partido">-</span></p>
+    <p><strong>UF:</strong> <span id="dep-uf">-</span></p>
+</div>
 
-                </div>
-            </aside>
+</div>
+</aside>
 
-            <section>
+<section>
 
-                <div class="card"
-                     style="margin-bottom:25px; border-left:5px solid var(--secondary); display:flex; justify-content:space-between; align-items:center;">
-                    
-                    <div>
-                        <h3 style="font-size:0.8rem; color:var(--text-light); text-transform:uppercase;">
-                            Total Acumulado (2025-2026)
-                        </h3>
+<div class="card" style="margin-bottom:25px; border-left:5px solid var(--secondary); display:flex; justify-content:space-between;">
+    <div>
+        <h3 style="font-size:0.8rem;">Total Acumulado (2025-2026)</h3>
+        <h2 id="dep-total" style="font-size:2.5rem;">R$ 0,00</h2>
+    </div>
 
-                        <h2 id="dep-total"
-                            style="font-size:2.5rem; color:var(--primary); margin:5px 0;">
-                            R$ 0,00
-                        </h2>
-                    </div>
+    <div id="status-carregamento" style="font-size:0.8rem;">
+        Iniciando...
+    </div>
+</div>
 
-                    <div id="status-carregamento"
-                         style="font-size:0.75rem; color:#ff9800; font-weight:bold;">
-                        Iniciando...
-                    </div>
-                </div>
+<div class="card">
+<h3>Extrato de Despesas</h3>
 
-                <div class="card">
-                    <h3>Extrato de Despesas Detalhado</h3>
+<div style="max-height:600px; overflow:auto;">
+<table style="width:100%;">
+<thead>
+<tr>
+<th>Data</th>
+<th>Despesa</th>
+<th style="text-align:right;">Valor</th>
+</tr>
+</thead>
 
-                    <div style="max-height:600px; overflow-y:auto; margin-top:15px;">
-                        <table style="width:100%; border-collapse:collapse; font-size:0.85rem;">
-                            
-                            <thead style="background:#f8f9fa; position:sticky; top:0;">
-                                <tr>
-                                    <th style="padding:15px; border-bottom:2px solid #ddd;">Data</th>
-                                    <th style="padding:15px; border-bottom:2px solid #ddd;">Despesa</th>
-                                    <th style="padding:15px; border-bottom:2px solid #ddd; text-align:right;">Valor</th>
-                                </tr>
-                            </thead>
+<tbody id="tabela-gastos"></tbody>
+</table>
+</div>
 
-                            <tbody id="tabela-gastos"></tbody>
+</div>
 
-                        </table>
-                    </div>
-                </div>
+</section>
+</div>
+</main>
 
-            </section>
-        </div>
-    </main>
+<script>
+const id = new URLSearchParams(window.location.search).get('id')
 
-    <script>
-        const idDeputado = new URLSearchParams(window.location.search).get('id');
+async function init() {
+    if (!id) return
 
-        const delay = ms => new Promise(res => setTimeout(res, ms));
+    await carregarPerfil()
+    await carregarGastos()
+}
 
-        async function carregarTudo() {
-            if (!idDeputado) return;
+async function carregarPerfil() {
+    const img = document.getElementById("dep-foto")
+    const txt = document.getElementById("txt-foto")
 
-            await buscarPerfil();
-            buscarGastos();
+    try {
+        const res = await fetch(`/api/deputado/${id}`)
+        const d = await res.json()
+
+        document.getElementById("dep-nome").innerText = d.nome || "Sem nome"
+        document.getElementById("dep-partido").innerText = d.partido || "-"
+        document.getElementById("dep-uf").innerText = d.uf || "-"
+
+        if (d.foto) {
+            img.src = d.foto
+            img.style.display = "block"
+            txt.style.display = "none"
+        } else {
+            txt.innerText = "Sem foto"
         }
 
-        async function buscarPerfil() {
-            const img = document.getElementById('dep-foto');
-            const txt = document.getElementById('txt-foto');
+    } catch {
+        txt.innerText = "Erro ao carregar"
+    }
+}
 
-            try {
-                const res = await fetch(
-                    `https://dadosabertos.camara.leg.br/api/v2/deputados/${idDeputado}`
-                );
+async function carregarGastos() {
+    const status = document.getElementById("status-carregamento")
 
-                const json = await res.json();
-                const d = json.dados.ultimoStatus;
+    try {
+        const res = await fetch(`/api/gastos/${id}`)
+        const lista = await res.json()
 
-                document.getElementById('dep-nome').innerText = d.nome;
-                document.getElementById('dep-partido').innerText = d.siglaPartido;
-                document.getElementById('dep-uf').innerText = d.siglaUf;
+        status.innerText = "Processando..."
 
-                img.src = d.urlFoto + "?v=" + Date.now(); // evita bug de cache
-                img.style.display = 'block';
-                txt.style.display = 'none';
+        // 🔥 ordena corretamente por data
+        lista.sort((a,b)=>{
+            return new Date(b.dataDocumento) - new Date(a.dataDocumento)
+        })
 
-            } catch {
-                txt.innerText = "Erro ao carregar";
-            }
-        }
+        renderTabela(lista)
 
-        async function buscarGastos() {
-            const status = document.getElementById('status-carregamento');
+        status.innerText = "Finalizado"
+        status.style.color = "green"
 
-            let lista = [];
-            const anos = [2026, 2025];
+    } catch {
+        status.innerText = "Erro"
+        status.style.color = "red"
+    }
+}
 
-            for (let ano of anos) {
-                let pagina = 1;
-                let continuar = true;
+function renderTabela(lista) {
+    const tabela = document.getElementById("tabela-gastos")
+    const totalEl = document.getElementById("dep-total")
 
-                while (continuar) {
-                    status.innerText = `${ano} pág ${pagina}`;
+    let total = 0
 
-                    try {
-                        const res = await fetch(
-                            `https://dadosabertos.camara.leg.br/api/v2/deputados/${idDeputado}/despesas?ano=${ano}&pagina=${pagina}&itens=100`
-                        );
+    tabela.innerHTML = lista.map(g => {
 
-                        const json = await res.json();
+        const valor = g.valorDocumento || 0
+        total += valor
 
-                        if (!json.dados || json.dados.length === 0) {
-                            continuar = false;
-                        } else {
-                            lista = lista.concat(json.dados);
-                            atualizarTabela(lista);
-                            pagina++;
-                            await delay(500);
-                        }
+        const data = g.dataDocumento
+            ? g.dataDocumento.split("T")[0].split("-").reverse().join("/")
+            : "-"
 
-                    } catch {
-                        continuar = false;
-                    }
+        return `
+        <tr>
+            <td>${data}</td>
+            <td>${g.tipoDespesa || "-"}</td>
+            <td style="text-align:right;">
+                ${valor.toLocaleString('pt-br',{style:'currency',currency:'BRL'})}
+            </td>
+        </tr>
+        `
+    }).join("")
 
-                    if (pagina > 20) continuar = false;
-                }
-            }
+    totalEl.innerText =
+        total.toLocaleString('pt-br',{style:'currency',currency:'BRL'})
+}
 
-            status.innerText = "Finalizado";
-            status.style.color = "green";
-        }
+init()
+</script>
 
-        function atualizarTabela(dados) {
-            const tabela = document.getElementById('tabela-gastos');
-            const totalDisplay = document.getElementById('dep-total');
-
-            let soma = 0;
-
-            tabela.innerHTML = dados.map(g => {
-                soma += g.valorLiquido;
-
-                let data = g.dataDocumento 
-                    ? g.dataDocumento.substring(0,10).split('-').reverse().join('/')
-                    : `01/${String(g.mes).padStart(2,'0')}/${g.ano}`;
-
-                return `
-                <tr>
-                    <td style="padding:10px;">${data}</td>
-                    <td style="padding:10px;">${g.tipoDespesa}</td>
-                    <td style="padding:10px; text-align:right;">
-                        ${g.valorLiquido.toLocaleString('pt-br',{style:'currency',currency:'BRL'})}
-                    </td>
-                </tr>
-                `;
-            }).join('');
-
-            totalDisplay.innerText =
-                soma.toLocaleString('pt-br',{style:'currency',currency:'BRL'});
-        }
-
-        carregarTudo();
-    </script>
 </body>
 </html>
