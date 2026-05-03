@@ -1,305 +1,191 @@
 <!DOCTYPE html>
-
 <html lang="pt-br">
-
 <head>
-
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Relatórios | Radar Cidadão</title>
-
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-
 </head>
 
-
-
 <body>
-
     <header class="navbar">
-
         <a href="/" class="logo">RADAR<span>CIDADÃO</span></a>
-
         <nav>
-
             <ul class="nav-links">
-
                 <li><a href="/">Home</a></li>
-
                 <li><a href="/deputados.html">Deputados</a></li>
-
                 <li><a href="/relatorios.html" class="active">Relatórios</a></li>
-
                 <li><a href="/graficos.html">Gráficos</a></li>
-
             </ul>
-
         </nav>
-
     </header>
 
-
-
     <main class="container">
-
         <div class="card" style="margin-bottom: 30px;">
-
             <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
-
                 
-
                 <div>
-
-                    <label>Tipo de Proposição</label>
-
-                    <select style="width:100%; padding:10px; border-radius:5px;">
-
-                        <option>Cotas Parlamentares</option>
-
+                    <label>Tipo de Busca</label>
+                    <select id="tipo-busca" style="width:100%; padding:10px; border-radius:5px;">
+                        <option value="despesas">Cotas Parlamentares (Gastos)</option>
+                        <option value="proposicoes">Proposições (Projetos/Leis)</option>
                     </select>
-
                 </div>
 
-
-
                 <div>
-
                     <label>Nome do Deputado</label>
-
                     <input type="text" id="nome-busca" list="lista-deputados" placeholder="Digite o nome..."
-
                         style="width:100%; padding:10px; border-radius:5px;" autocomplete="off">
-
                     <datalist id="lista-deputados"></datalist>
-
                 </div>
-
-
 
                 <div>
-
                     <label>Ano</label>
-
                     <input type="text" id="ano-busca" value="2025"
-
                         style="width:100%; padding:10px; border-radius:5px;">
-
                 </div>
-
             </div>
 
-
-
             <button onclick="buscarRelatorio()" class="btn"
-
                 style="margin-top:20px; background: var(--secondary); border:none; cursor:pointer;">
-
                 Pesquisar
-
             </button>
-
         </div>
-
-
 
         <div class="card">
-
-            <h3 style="color: var(--primary); margin-bottom: 10px;">Resultados do Relatório</h3>
-
+            <h3 id="titulo-sessao" style="color: var(--primary); margin-bottom: 10px;">Resultados do Relatório</h3>
             <p id="total-geral" style="margin-bottom:15px; font-weight:bold;"></p>
 
-
-
             <table style="width:100%; border-collapse:collapse;">
-
                 <thead style="background:#f4f4f4;">
-
-                    <tr>
-
-                        <th style="padding:12px; text-align:left;">Categoria</th>
-
-                        <th style="padding:12px; text-align:right;">Total</th>
-
+                    <tr id="cabecalho-tabela">
+                        <th id="th-1" style="padding:12px; text-align:left;">Categoria</th>
+                        <th id="th-2" style="padding:12px; text-align:right;">Total</th>
                     </tr>
-
                 </thead>
-
                 <tbody id="resultado-tabela">
-
                     <tr>
-
                         <td colspan="2" style="padding:20px; text-align:center; color:#999;">
-
                             Selecione um deputado e clique em pesquisar
-
                         </td>
-
                     </tr>
-
                 </tbody>
-
             </table>
-
         </div>
-
     </main>
 
-
-
 <script>
-
     let mapaDeputados = {};
 
+    // Carrega a lista de deputados para o datalist
     async function carregarSugestoes() {
-
         const datalist = document.getElementById('lista-deputados');
-
         try {
-
             const res = await fetch("https://dadosabertos.camara.leg.br/api/v2/deputados?ordem=ASC&ordenarPor=nome");
-
             const json = await res.json();
-
             
-
             json.dados.forEach(dep => {
-
                 const opt = document.createElement('option');
-
                 opt.value = dep.nome;
-
                 datalist.appendChild(opt);
-
                 mapaDeputados[dep.nome.toLowerCase()] = dep.id;
-
             });
-
         } catch (e) { console.error("Erro ao carregar lista:", e); }
-
     }
-
-
 
     carregarSugestoes();
 
-
-
     async function buscarRelatorio() {
-
         const nomeInput = document.getElementById('nome-busca').value.trim().toLowerCase();
-
         const ano = document.getElementById('ano-busca').value;
-
+        const tipoBusca = document.getElementById('tipo-busca').value;
         const id = mapaDeputados[nomeInput];
 
-
-
         if (!id) {
-
             alert("Por favor, selecione um deputado da lista.");
-
             return;
-
         }
-
-
 
         const tabela = document.getElementById('resultado-tabela');
-
         const totalEl = document.getElementById('total-geral');
-
-
+        const th1 = document.getElementById('th-1');
+        const th2 = document.getElementById('th-2');
 
         tabela.innerHTML = `<tr><td colspan="2" style="padding:20px; text-align:center;">Carregando dados...</td></tr>`;
-
         totalEl.innerHTML = "";
 
-
-
         try {
+            if (tipoBusca === "despesas") {
+                // LÓGICA DE GASTOS (COTAS)
+                th1.innerText = "Categoria";
+                th2.innerText = "Total";
+                
+                let pagina = 1;
+                let todosGastos = [];
 
-            let pagina = 1;
+                while (true) {
+                    const res = await fetch(`https://dadosabertos.camara.leg.br/api/v2/deputados/${id}/despesas?ano=${ano}&pagina=${pagina}&itens=100`);
+                    const json = await res.json();
+                    if (!json.dados || !json.dados.length) break;
+                    todosGastos = todosGastos.concat(json.dados);
+                    pagina++;
+                    if (pagina > 20) break; 
+                }
 
-            let todos = [];
+                if (!todosGastos.length) {
+                    tabela.innerHTML = `<tr><td colspan="2" style="padding:20px; text-align:center;">Nenhum gasto encontrado para este ano.</td></tr>`;
+                    return;
+                }
 
+                let resumo = {};
+                todosGastos.forEach(g => {
+                    resumo[g.tipoDespesa] = (resumo[g.tipoDespesa] || 0) + g.valorLiquido;
+                });
 
+                const total = Object.values(resumo).reduce((a, b) => a + b, 0);
+                totalEl.innerHTML = "Total gasto: " + total.toLocaleString('pt-br', { style: 'currency', currency: 'BRL' });
 
-            while (true) {
+                const ordenado = Object.entries(resumo).sort((a, b) => b[1] - a[1]);
+                tabela.innerHTML = ordenado.map(([cat, valor]) => `
+                    <tr style="border-bottom:1px solid #eee;">
+                        <td style="padding:12px;">${cat}</td>
+                        <td style="padding:12px; text-align:right; font-weight:bold;">
+                            ${valor.toLocaleString('pt-br',{style:'currency',currency:'BRL'})}
+                        </td>
+                    </tr>
+                `).join('');
 
-                const res = await fetch(`https://dadosabertos.camara.leg.br/api/v2/deputados/${id}/despesas?ano=${ano}&pagina=${pagina}&itens=100`);
+            } else {
+                // LÓGICA DE PROPOSIÇÕES (LEIS/PROJETOS)
+                th1.innerText = "Ementa (Assunto)";
+                th2.innerText = "Identificação";
 
+                const urlProposicoes = `https://dadosabertos.camara.leg.br/api/v2/proposicoes?idDeputadoAutor=${id}&ano=${ano}&ordem=DESC&ordenarPor=id`;
+                const res = await fetch(urlProposicoes);
                 const json = await res.json();
 
-                if (!json.dados || !json.dados.length) break;
+                if (!json.dados || !json.dados.length) {
+                    tabela.innerHTML = `<tr><td colspan="2" style="padding:20px; text-align:center;">Nenhuma proposição encontrada para este deputado em ${ano}.</td></tr>`;
+                    return;
+                }
 
-                todos = todos.concat(json.dados);
+                totalEl.innerHTML = `Total de Proposições encontradas: ${json.dados.length}`;
 
-                pagina++;
-
-                if (pagina > 40) break;
-
+                tabela.innerHTML = json.dados.map(p => `
+                    <tr style="border-bottom:1px solid #eee;">
+                        <td style="padding:12px; font-size: 0.9em;">${p.ementa || "Sem ementa disponível"}</td>
+                        <td style="padding:12px; text-align:right; font-weight:bold; white-space: nowrap;">
+                            ${p.siglaTipo} ${p.numero}/${p.ano}
+                        </td>
+                    </tr>
+                `).join('');
             }
-
-
-
-            if (!todos.length) {
-
-                tabela.innerHTML = `<tr><td colspan="2" style="padding:20px; text-align:center;">Nenhum dado encontrado.</td></tr>`;
-
-                return;
-
-            }
-
-
-
-            let resumo = {};
-
-            todos.forEach(g => {
-
-                resumo[g.tipoDespesa] = (resumo[g.tipoDespesa] || 0) + g.valorLiquido;
-
-            });
-
-
-
-            const total = Object.values(resumo).reduce((a, b) => a + b, 0);
-
-            totalEl.innerHTML = "Total gasto: " + total.toLocaleString('pt-br', { style: 'currency', currency: 'BRL' });
-
-
-
-            const ordenado = Object.entries(resumo).sort((a, b) => b[1] - a[1]);
-
-            tabela.innerHTML = ordenado.map(([cat, valor]) => `
-
-                <tr style="border-bottom:1px solid #eee;">
-
-                    <td style="padding:12px;">${cat}</td>
-
-                    <td style="padding:12px; text-align:right; font-weight:bold;">
-
-                        ${valor.toLocaleString('pt-br',{style:'currency',currency:'BRL'})}
-
-                    </td>
-
-                </tr>
-
-            `).join('');
-
-
 
         } catch (e) {
-
-            tabela.innerHTML = `<tr><td colspan="2" style="padding:20px; text-align:center; color:red;">Erro ao carregar dados</td></tr>`;
-
+            console.error(e);
+            tabela.innerHTML = `<tr><td colspan="2" style="padding:20px; text-align:center; color:red;">Erro ao carregar dados da Câmara</td></tr>`;
         }
-
     }
-
 </script>
-
 </body>
-
-</html> a
+</html>
