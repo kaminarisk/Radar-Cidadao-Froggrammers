@@ -2,111 +2,112 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Relatórios | Radar Cidadão</title>
-
-    <!DOCTYPE html>
-    
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 
 <body>
     <header class="navbar">
         <a href="/" class="logo">RADAR<span>CIDADÃO</span></a>
+        <nav>
+            <ul class="nav-links">
+                <li><a href="/">Home</a></li>
+                <li><a href="/deputados.html">Deputados</a></li>
+                <li><a href="/relatorios.html" class="active">Relatórios</a></li>
+                <li><a href="/graficos.html">Gráficos</a></li>
+            </ul>
+        </nav>
+    </header>
 
-    <nav>
-        <ul class="nav-links">
-            <li><a href="/">Home</a></li>
-            <li><a href="/deputados.html">Deputados</a></li>
-            <li><a href="/relatorios.html" class="active">Relatórios</a></li>
-            <li><a href="/graficos.html">Gráficos</a></li>
-        </ul>
-    </nav>
-</header>
+    <main class="container">
+        <div class="card" style="margin-bottom: 30px;">
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
+                
+                <div>
+                    <label>Tipo de Proposição</label>
+                    <select style="width:100%; padding:10px; border-radius:5px;">
+                        <option>Cotas Parlamentares</option>
+                    </select>
+                </div>
 
-<main class="container">
+                <div>
+                    <label>Nome do Deputado</label>
+                    <input type="text" id="nome-busca" list="lista-deputados" placeholder="Digite o nome..."
+                        style="width:100%; padding:10px; border-radius:5px;" autocomplete="off">
+                    <datalist id="lista-deputados"></datalist>
+                </div>
 
-    <div class="card" style="margin-bottom: 30px;">
-        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
-            
-            <div>
-                <label>Tipo de Proposição</label>
-                <select style="width:100%; padding:10px; border-radius:5px;">
-                    <option>Cotas Parlamentares</option>
-                </select>
+                <div>
+                    <label>Ano</label>
+                    <input type="text" id="ano-busca" value="2025"
+                        style="width:100%; padding:10px; border-radius:5px;">
+                </div>
             </div>
 
-            <div>
-                <label>ID do Deputado</label>
-                <input type="text" id="id-busca" placeholder="Ex: 160976"
-                    style="width:100%; padding:10px; border-radius:5px;">
-            </div>
-
-            <div>
-                <label>Ano</label>
-                <input type="text" id="ano-busca" value="2025"
-                    style="width:100%; padding:10px; border-radius:5px;">
-            </div>
-
+            <button onclick="buscarRelatorio()" class="btn"
+                style="margin-top:20px; background: var(--secondary); border:none; cursor:pointer;">
+                Pesquisar
+            </button>
         </div>
 
-        <button onclick="buscarRelatorio()"
-            class="btn"
-            style="margin-top:20px; background: var(--secondary); border:none;">
-            Pesquisar
-        </button>
-    </div>
+        <div class="card">
+            <h3 style="color: var(--primary); margin-bottom: 10px;">Resultados do Relatório</h3>
+            <p id="total-geral" style="margin-bottom:15px; font-weight:bold;"></p>
 
-    <div class="card">
-        <h3 style="color: var(--primary); margin-bottom: 10px;">
-            Resultados do Relatório
-        </h3>
-
-        <p id="total-geral" style="margin-bottom:15px; font-weight:bold;"></p>
-
-        <table style="width:100%; border-collapse:collapse;">
-            
-            <thead style="background:#f4f4f4;">
-                <tr>
-                    <th style="padding:12px; text-align:left;">Categoria</th>
-                    <th style="padding:12px; text-align:right;">Total</th>
-                </tr>
-            </thead>
-
-            <tbody id="resultado-tabela">
-                <tr>
-                    <td colspan="2"
-                        style="padding:20px; text-align:center; color:#999;">
-                        Digite um ID e clique em pesquisar
-                    </td>
-                </tr>
-            </tbody>
-
-        </table>
-    </div>
-
-</main>
+            <table style="width:100%; border-collapse:collapse;">
+                <thead style="background:#f4f4f4;">
+                    <tr>
+                        <th style="padding:12px; text-align:left;">Categoria</th>
+                        <th style="padding:12px; text-align:right;">Total</th>
+                    </tr>
+                </thead>
+                <tbody id="resultado-tabela">
+                    <tr>
+                        <td colspan="2" style="padding:20px; text-align:center; color:#999;">
+                            Selecione um deputado e clique em pesquisar
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
 
 <script>
-    async function buscarRelatorio() {
-        const id = document.getElementById('id-busca').value;
-        const ano = document.getElementById('ano-busca').value;
+    let mapaDeputados = {};
 
-        if (!id || isNaN(id)) {
-            alert("Digite um ID válido");
+    // Carrega a lista para o autocomplete assim que a página abre
+    async function carregarSugestoes() {
+        const datalist = document.getElementById('lista-deputados');
+        try {
+            const res = await fetch("https://dadosabertos.camara.leg.br/api/v2/deputados?ordem=ASC&ordenarPor=nome");
+            const json = await res.json();
+            
+            json.dados.forEach(dep => {
+                const opt = document.createElement('option');
+                opt.value = dep.nome;
+                datalist.appendChild(opt);
+                mapaDeputados[dep.nome.toLowerCase()] = dep.id;
+            });
+        } catch (e) { console.error("Erro ao carregar lista:", e); }
+    }
+
+    carregarSugestoes();
+
+    async function buscarRelatorio() {
+        const nomeInput = document.getElementById('nome-busca').value.trim().toLowerCase();
+        const ano = document.getElementById('ano-busca').value;
+        const id = mapaDeputados[nomeInput];
+
+        if (!id) {
+            alert("Por favor, selecione um deputado da lista.");
             return;
         }
 
         const tabela = document.getElementById('resultado-tabela');
         const totalEl = document.getElementById('total-geral');
 
-        tabela.innerHTML = `
-            <tr>
-                <td colspan="2" style="padding:20px; text-align:center;">
-                    Carregando dados...
-                </td>
-            </tr>
-        `;
+        tabela.innerHTML = `<tr><td colspan="2" style="padding:20px; text-align:center;">Carregando dados...</td></tr>`;
         totalEl.innerHTML = "";
 
         try {
@@ -114,48 +115,28 @@
             let todos = [];
 
             while (true) {
-                const res = await fetch(
-                    `https://dadosabertos.camara.leg.br/api/v2/deputados/${id}/despesas?ano=${ano}&pagina=${pagina}&itens=100`
-                );
-
+                const res = await fetch(`https://dadosabertos.camara.leg.br/api/v2/deputados/${id}/despesas?ano=${ano}&pagina=${pagina}&itens=100`);
                 const json = await res.json();
-                const dados = json.dados || [];
-
-                if (!dados.length) break;
-
-                todos = todos.concat(dados);
+                if (!json.dados || !json.dados.length) break;
+                todos = todos.concat(json.dados);
                 pagina++;
-
-                if (pagina > 50) break;
+                if (pagina > 40) break;
             }
 
-            let resumo = {};
-
-            todos.forEach(g => {
-                resumo[g.tipoDespesa] =
-                    (resumo[g.tipoDespesa] || 0) + g.valorLiquido;
-            });
-
-            if (Object.keys(resumo).length === 0) {
-                tabela.innerHTML = `
-                    <tr>
-                        <td colspan="2" style="padding:20px; text-align:center;">
-                            Nenhum dado encontrado
-                        </td>
-                    </tr>
-                `;
+            if (!todos.length) {
+                tabela.innerHTML = `<tr><td colspan="2" style="padding:20px; text-align:center;">Nenhum dado encontrado.</td></tr>`;
                 return;
             }
 
-            const total = Object.values(resumo)
-                .reduce((a, b) => a + b, 0);
+            let resumo = {};
+            todos.forEach(g => {
+                resumo[g.tipoDespesa] = (resumo[g.tipoDespesa] || 0) + g.valorLiquido;
+            });
 
-            totalEl.innerHTML = "Total gasto: " + 
-                total.toLocaleString('pt-br', { style: 'currency', currency: 'BRL' });
+            const total = Object.values(resumo).reduce((a, b) => a + b, 0);
+            totalEl.innerHTML = "Total gasto: " + total.toLocaleString('pt-br', { style: 'currency', currency: 'BRL' });
 
-            const ordenado = Object.entries(resumo)
-                .sort((a, b) => b[1] - a[1]);
-
+            const ordenado = Object.entries(resumo).sort((a, b) => b[1] - a[1]);
             tabela.innerHTML = ordenado.map(([cat, valor]) => `
                 <tr style="border-bottom:1px solid #eee;">
                     <td style="padding:12px;">${cat}</td>
@@ -166,16 +147,9 @@
             `).join('');
 
         } catch (e) {
-            tabela.innerHTML = `
-                <tr>
-                    <td colspan="2" style="padding:20px; text-align:center; color:red;">
-                        Erro ao carregar dados
-                    </td>
-                </tr>
-            `;
+            tabela.innerHTML = `<tr><td colspan="2" style="padding:20px; text-align:center; color:red;">Erro ao carregar dados</td></tr>`;
         }
     }
 </script>
-
 </body>
 </html>
