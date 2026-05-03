@@ -73,13 +73,21 @@ const btnGerar = document.getElementById("btn-gerar-comparacao");
 const modal = document.getElementById("modal-comparacao");
 const conteudo = document.getElementById("conteudo-comparacao");
 
-// CARREGAR API
+// 🔥 FUNÇÃO MELHORADA (RESOLVE TEU ERRO)
 async function carregarDeputados() {
     try {
         const res = await fetch('/api/deputados');
         const json = await res.json();
 
-        todosDeputados = json;
+        // 🔥 SUPORTA OS DOIS FORMATOS (IMPORTANTE)
+        todosDeputados = Array.isArray(json) ? json : json.dados || [];
+
+        if (todosDeputados.length === 0) {
+            contagem.innerText = "Nenhum deputado encontrado";
+            return;
+        }
+
+        contagem.innerText = `${todosDeputados.length} deputados carregados`;
 
         popularFiltros(todosDeputados);
         renderizarCards(todosDeputados);
@@ -90,7 +98,11 @@ async function carregarDeputados() {
     }
 }
 
+// 🔥 LIMPA ANTES DE POPULAR (evita duplicar opções)
 function popularFiltros(dados) {
+    filtroEstado.innerHTML = '<option value="">Estado</option>';
+    filtroPartido.innerHTML = '<option value="">Partido</option>';
+
     const estados = [...new Set(dados.map(d => d.uf))].sort();
     const partidos = [...new Set(dados.map(d => d.partido))].sort();
 
@@ -191,17 +203,16 @@ function atualizarBotao() {
 
     btnGerar.disabled = qtd < 2;
     btnGerar.style.opacity = qtd < 2 ? "0.5" : "1";
-    btnGerar.style.cursor = qtd < 2 ? "not-allowed" : "pointer";
 }
 
-// GERAR COMPARAÇÃO (BONITO)
+// COMPARAÇÃO
 btnGerar.onclick = () => {
     if (selecionados.size < 2) return;
 
     const lista = todosDeputados.filter(d => selecionados.has(d.id));
 
     conteudo.innerHTML = `
-        <table style="width:100%; border-collapse: collapse; text-align:center;">
+        <table>
             <thead>
                 <tr>
                     <th>Campo</th>
@@ -241,6 +252,7 @@ function toast(msg) {
     setTimeout(() => t.classList.remove("show"), 2000);
 }
 
+// INIT
 carregarDeputados();
 </script>
 
