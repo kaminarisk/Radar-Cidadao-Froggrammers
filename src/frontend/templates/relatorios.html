@@ -41,8 +41,16 @@
 
                 <div>
                     <label>Ano</label>
-                    <input type="text" id="ano-busca" value="2025"
-                        style="width:100%; padding:10px; border-radius:5px;">
+                    <select id="ano-busca" style="width:100%; padding:10px; border-radius:5px;">
+                        <option value="2026">2026</option>
+                        <option value="2025" selected>2025</option>
+                        <option value="2024">2024</option>
+                        <option value="2023">2023</option>
+                        <option value="2022">2022</option>
+                        <option value="2021">2021</option>
+                        <option value="2020">2020</option>
+                        <option value="2019">2019</option>
+                    </select>
                 </div>
             </div>
 
@@ -77,7 +85,6 @@
 <script>
     let mapaDeputados = {};
 
-    // Carrega a lista e mapeia o nome ao ID correto
     async function carregarSugestoes() {
         const datalist = document.getElementById('lista-deputados');
         const input = document.getElementById('nome-busca');
@@ -90,7 +97,6 @@
                 const opt = document.createElement('option');
                 opt.value = dep.nome;
                 datalist.appendChild(opt);
-                // Salva o ID usando o nome em minúsculas para evitar erros de digitação
                 mapaDeputados[dep.nome.toLowerCase()] = dep.id;
             });
             input.placeholder = "Digite o nome...";
@@ -126,7 +132,7 @@
                 thDesc.innerText = "Descrição da Proposição";
                 thInfo.innerText = "Link Oficial";
 
-                // CRITICAL: O parâmetro idDeputadoAutor garante que só venham dados DELE
+                // idDeputadoAutor filtra exclusivamente o deputado digitado
                 const url = `https://dadosabertos.camara.leg.br/api/v2/proposicoes?idDeputadoAutor=${idDeputado}&ano=${ano}&ordem=DESC&ordenarPor=id`;
                 const res = await fetch(url);
                 const json = await res.json();
@@ -136,7 +142,7 @@
                     return;
                 }
 
-                totalEl.innerHTML = `Proposições autorais de ${document.getElementById('nome-busca').value}: ${json.dados.length}`;
+                totalEl.innerHTML = `Proposições de ${document.getElementById('nome-busca').value} em ${ano}: ${json.dados.length}`;
                 
                 tabela.innerHTML = json.dados.map(p => `
                     <tr style="border-bottom:1px solid #eee;">
@@ -154,7 +160,6 @@
                 `).join('');
 
             } else {
-                // Lógica de Despesas (Cotas)
                 thDesc.innerText = "Categoria de Despesa";
                 thInfo.innerText = "Valor Total";
 
@@ -170,7 +175,7 @@
                 }
 
                 if (!todos.length) {
-                    tabela.innerHTML = `<tr><td colspan="2" style="padding:20px; text-align:center;">Nenhum gasto registrado.</td></tr>`;
+                    tabela.innerHTML = `<tr><td colspan="2" style="padding:20px; text-align:center;">Nenhum gasto registrado em ${ano}.</td></tr>`;
                     return;
                 }
 
@@ -180,7 +185,7 @@
                 });
 
                 const total = Object.values(resumo).reduce((a, b) => a + b, 0);
-                totalEl.innerHTML = "Total gasto: " + total.toLocaleString('pt-br', { style: 'currency', currency: 'BRL' });
+                totalEl.innerHTML = `Total gasto por ${document.getElementById('nome-busca').value} em ${ano}: ` + total.toLocaleString('pt-br', { style: 'currency', currency: 'BRL' });
 
                 tabela.innerHTML = Object.entries(resumo).sort((a, b) => b[1] - a[1]).map(([cat, valor]) => `
                     <tr style="border-bottom:1px solid #eee;">
