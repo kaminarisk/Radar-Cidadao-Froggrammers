@@ -6,7 +6,9 @@ app = Flask(__name__,
             static_folder='static')
 
 
-# 🔹 PÁGINAS
+# =========================
+# PÁGINAS
+# =========================
 @app.route("/")
 def home():
     return render_template("index.html")
@@ -28,32 +30,23 @@ def graficos():
     return render_template("graficos.html")
 
 
-# 🔹 LISTA DE DEPUTADOS (PADRONIZADO)
+# =========================
+# API - LISTA DE DEPUTADOS
+# =========================
 @app.route("/api/deputados")
 def api_deputados():
     try:
         r = requests.get(
             "https://dadosabertos.camara.leg.br/api/v2/deputados?ordem=ASC&ordenarPor=nome"
-        ).json()
-
-        lista = []
-
-        for d in r.get("dados", []):
-            lista.append({
-                "id": d.get("id"),
-                "nome": d.get("nome"),
-                "partido": d.get("siglaPartido"),
-                "uf": d.get("siglaUf"),
-                "foto": d.get("urlFoto")
-            })
-
-        return jsonify(lista)
-
+        )
+        return jsonify(r.json())
     except:
-        return jsonify([])
+        return jsonify({"dados": []})
 
 
-# 🔥 PERFIL DO DEPUTADO
+# =========================
+# API - PERFIL DO DEPUTADO
+# =========================
 @app.route("/api/deputado/<int:id_dep>")
 def deputado_info(id_dep):
     try:
@@ -62,13 +55,14 @@ def deputado_info(id_dep):
         ).json()["dados"]
 
         return jsonify({
-            "nome": r.get("nomeCivil"),
-            "partido": r.get("ultimoStatus", {}).get("siglaPartido"),
-            "uf": r.get("ultimoStatus", {}).get("siglaUf"),
-            "foto": r.get("ultimoStatus", {}).get("urlFoto")
+            "nome": r.get("nomeCivil", "Desconhecido"),
+            "partido": r.get("ultimoStatus", {}).get("siglaPartido", "-"),
+            "uf": r.get("ultimoStatus", {}).get("siglaUf", "-"),
+            "foto": r.get("ultimoStatus", {}).get("urlFoto", "")
         })
 
-    except:
+    except Exception as e:
+        print("ERRO PERFIL:", e)
         return jsonify({
             "nome": "Erro",
             "partido": "-",
@@ -77,44 +71,43 @@ def deputado_info(id_dep):
         })
 
 
-# 🔥 GASTOS COMPLETOS (2025 + 2026)
+# =========================
+# API - GASTOS COMPLETOS
+# =========================
 @app.route("/api/gastos/<int:id_dep>")
 def gastos(id_dep):
     try:
-        todos = []
+        lista = []
+        anos = [2026, 2025]
 
-        for ano in [2025, 2026]:
+        for ano in anos:
             pagina = 1
 
             while True:
                 url = f"https://dadosabertos.camara.leg.br/api/v2/deputados/{id_dep}/despesas?ano={ano}&pagina={pagina}&itens=100"
 
-                res = requests.get(url).json()
-                dados = res.get("dados", [])
+                r = requests.get(url).json()
+                dados = r.get("dados", [])
 
                 if not dados:
                     break
 
-                for g in dados:
-                    todos.append({
-                        "dataDocumento": g.get("dataDocumento"),
-                        "tipoDespesa": g.get("tipoDespesa"),
-                        "valorDocumento": g.get("valorDocumento", 0)
-                    })
+                lista.extend(dados)
 
                 pagina += 1
 
-        # 🔥 ORDENA POR DATA (mais recente primeiro)
-        todos.sort(
-            key=lambda x: x["dataDocumento"] if x["dataDocumento"] else "",
-            reverse=True
-        )
+                if pagina > 50:
+                    break
 
-        return jsonify(todos)
+        return jsonify(lista)
 
-    except:
+    except Exception as e:
+        print("ERRO GASTOS:", e)
         return jsonify([])
 
 
+# =========================
+# RUN
+# =========================
 if __name__ == "__main__":
     app.run(debug=True)
