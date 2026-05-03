@@ -4,48 +4,60 @@
     <meta charset="UTF-8">
     <title>Deputados | Portal SJC</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        /* Garantindo que a Navbar não seja sobreposta */
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .toast { visibility: hidden; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #333; color: #fff; padding: 10px 20px; border-radius: 5px; }
+        .toast.show { visibility: visible; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; padding: 20px 0; }
+        .card { border: 1px solid #ddd; padding: 15px; border-radius: 8px; background: #fff; }
+    </style>
 </head>
 
 <body>
 
 <div id="toast" class="toast"></div>
 
-<!-- 🔥 NAVBAR CORRIGIDA -->
 <header class="navbar" style="display:flex; justify-content:space-between; align-items:center; padding:15px 30px; background:#0d47a1;">
-    <a href="/" class="logo" style="color:white; text-decoration:none; font-weight:bold;">
+    <a href="/" class="logo" style="color:white; text-decoration:none; font-weight:bold; font-size: 1.5rem;">
         PORTAL<span style="color:#ff9800;">SJC</span>
     </a>
 
     <nav>
-        <ul style="display:flex; gap:20px; list-style:none; margin:0;">
-            <li><a href="/" style="color:white;">Home</a></li>
-            <li><a href="/deputados.html" style="color:#ff9800;">Deputados</a></li>
-            <li><a href="/relatorios.html" style="color:white;">Relatórios</a></li>
-            <li><a href="/graficos.html" style="color:white;">Gráficos</a></li>
+        <ul style="display:flex; gap:20px; list-style:none; margin:0; padding:0;">
+            <li><a href="/" style="color:white; text-decoration:none;">Home</a></li>
+            <li><a href="/deputados.html" style="color:#ff9800; text-decoration:none; font-weight:bold;">Deputados</a></li>
+            <li><a href="/relatorios.html" style="color:white; text-decoration:none;">Relatórios</a></li>
+            <li><a href="/graficos.html" style="color:white; text-decoration:none;">Gráficos</a></li>
         </ul>
     </nav>
 </header>
 
-<main class="container">
+<main class="container" style="padding: 20px;">
     <h1>Representantes na Câmara Federal</h1>
     <p id="contagem">Carregando deputados...</p>
 
-    <div class="card">
-        <input type="text" id="busca-nome" placeholder="Buscar deputado...">
+    <div class="filter-bar" style="background:#f4f4f4; padding:20px; border-radius:8px; margin-bottom:20px;">
+        <input type="text" id="busca-nome" placeholder="Buscar deputado..." style="padding:8px;">
 
-        <select id="filtro-estado">
-            <option value="">Todos</option>
+        <select id="filtro-estado" style="padding:8px;">
+            <option value="">Todos Estados</option>
         </select>
 
-        <select id="filtro-partido">
-            <option value="">Todos</option>
+        <select id="filtro-partido" style="padding:8px;">
+            <option value="">Todos Partidos</option>
         </select>
 
-        <button id="btn-modo" onclick="toggleModoComparacao()">
+        <button id="btn-modo" onclick="toggleModoComparacao()" style="padding:8px 15px; cursor:pointer;">
             Comparar Deputados
         </button>
 
-        <button id="btn-gerar-comparacao" disabled style="display:none; opacity:0.5; cursor:not-allowed;">
+        <button id="btn-gerar-comparacao" disabled style="display:none; padding:8px 15px; background:#ff9800; border:none; color:white; font-weight:bold;">
             Gerar Comparação [0/4]
         </button>
     </div>
@@ -54,16 +66,10 @@
 </main>
 
 <!-- MODAL -->
-<div id="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%;
-background:rgba(0,0,0,0.6); justify-content:center; align-items:center;">
-
-    <div style="background:white; padding:20px; border-radius:10px; width:90%; max-width:900px; position:relative;">
-        <button onclick="fecharModal()" 
-            style="position:absolute; top:10px; right:10px; background:red; color:white; border:none; padding:5px 10px;">
-            X
-        </button>
-
-        <h2>Comparação</h2>
+<div id="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); justify-content:center; align-items:center; z-index:2000;">
+    <div style="background:white; padding:20px; border-radius:10px; width:95%; max-width:900px; position:relative; overflow-x:auto;">
+        <button onclick="fecharModal()" style="position:absolute; top:10px; right:10px; background:red; color:white; border:none; padding:5px 10px; cursor:pointer; font-weight:bold;">X</button>
+        <h2 style="margin-top:0;">Comparação de Despesas</h2>
         <div id="comparacao"></div>
     </div>
 </div>
@@ -73,7 +79,14 @@ let selecionados = new Set();
 let modoComparacao = false;
 let todosDeputados = [];
 
-// NORMALIZAÇÃO
+// Elementos
+const elLista = document.getElementById("lista-deputados");
+const elContagem = document.getElementById("contagem");
+const elBusca = document.getElementById("busca-nome");
+const elUf = document.getElementById("filtro-estado");
+const elPartido = document.getElementById("filtro-partido");
+const elBtnGerar = document.getElementById("btn-gerar-comparacao");
+
 function normalizarDeputado(d) {
     return {
         id: d.id,
@@ -84,153 +97,117 @@ function normalizarDeputado(d) {
     };
 }
 
-// CARREGAR
 async function carregarDeputados() {
-    const res = await fetch('/api/deputados');
-    const json = await res.json();
-
-    const lista = Array.isArray(json) ? json : json.dados || [];
-    todosDeputados = lista.map(normalizarDeputado);
-
-    popularFiltros();
-    renderizarCards(todosDeputados);
+    try {
+        // Tenta buscar da sua API, se falhar vai para a API oficial da Câmara
+        let res = await fetch('/api/deputados').catch(() => fetch('https://dadosabertos.camara.leg.br/api/v2/deputados?ordem=ASC&ordenarPor=nome'));
+        const json = await res.json();
+        const lista = Array.isArray(json) ? json : (json.dados || []);
+        
+        todosDeputados = lista.map(normalizarDeputado);
+        popularFiltros();
+        renderizarCards(todosDeputados);
+    } catch (err) {
+        elContagem.innerText = "Erro ao carregar dados. Verifique sua conexão.";
+        console.error(err);
+    }
 }
 
-// FILTROS
 function popularFiltros() {
-    const estados = [...new Set(todosDeputados.map(d => d.uf))];
-    const partidos = [...new Set(todosDeputados.map(d => d.partido))];
+    const estados = [...new Set(todosDeputados.map(d => d.uf))].sort();
+    const partidos = [...new Set(todosDeputados.map(d => d.partido))].sort();
 
-    const selEstado = document.getElementById("filtro-estado");
-    const selPartido = document.getElementById("filtro-partido");
-
-    estados.forEach(e => selEstado.innerHTML += `<option>${e}</option>`);
-    partidos.forEach(p => selPartido.innerHTML += `<option>${p}</option>`);
+    estados.forEach(e => { if(e !== "-") elUf.innerHTML += `<option value="${e}">${e}</option>`; });
+    partidos.forEach(p => { if(p !== "-") elPartido.innerHTML += `<option value="${p}">${p}</option>`; });
 }
 
-// RENDER
 function renderizarCards(lista) {
-    document.getElementById("contagem").innerText = `${lista.length} deputados`;
-
-    document.getElementById("lista-deputados").innerHTML = lista.map(d => `
-        <div class="card" style="text-align:center; border:${selecionados.has(d.id) ? '2px solid orange' : '1px solid #ddd'}">
-
-            <img src="${d.foto || 'https://www.camara.leg.br/tema/assets/images/foto-deputado-ausente.png'}"
-                 style="width:100%; height:200px; object-fit:cover;">
-
-            <h3>${d.nome}</h3>
-            <p>${d.partido} - ${d.uf}</p>
-
-            ${
-                modoComparacao
-                ? `<button class="btn-selecionar" data-id="${d.id}">
-                        ${selecionados.has(d.id) ? "Selecionado" : "Selecionar"}
+    elContagem.innerText = `${lista.length} deputados encontrados`;
+    elLista.innerHTML = lista.map(d => `
+        <div class="card" style="text-align:center; border:${selecionados.has(d.id) ? '3px solid #ff9800' : '1px solid #ddd'}">
+            <img src="${d.foto || 'https://www.camara.leg.br/tema/assets/images/foto-deputado-ausente.png'}" 
+                 style="width:100px; height:130px; object-fit:cover; border-radius:4px; background:#eee;">
+            <h3 style="font-size:1rem; margin:10px 0 5px;">${d.nome}</h3>
+            <p style="color:#666; font-size:0.9rem;">${d.partido} - ${d.uf}</p>
+            ${modoComparacao 
+                ? `<button class="btn-selecionar" data-id="${d.id}" style="padding:5px 10px; cursor:pointer; background:${selecionados.has(d.id) ? '#ff9800' : '#eee'}; border:1px solid #ccc;">
+                    ${selecionados.has(d.id) ? "Selecionado" : "Selecionar"}
                    </button>`
-                : `<a href="/perfil.html?id=${d.id}">Ver Perfil</a>`
+                : `<a href="/perfil.html?id=${d.id}" style="color:#0d47a1; text-decoration:none; font-weight:bold;">Ver Perfil</a>`
             }
         </div>
     `).join("");
 }
 
-// FILTRO
 function aplicarFiltros() {
-    const nome = document.getElementById("busca-nome").value.toLowerCase();
-    const uf = document.getElementById("filtro-estado").value;
-    const partido = document.getElementById("filtro-partido").value;
+    const nome = elBusca.value.toLowerCase();
+    const uf = elUf.value;
+    const partido = elPartido.value;
 
     const filtrados = todosDeputados.filter(d =>
         d.nome.toLowerCase().includes(nome) &&
         (uf === "" || d.uf === uf) &&
         (partido === "" || d.partido === partido)
     );
-
     renderizarCards(filtrados);
 }
 
-busca-nome.oninput = aplicarFiltros;
-filtro-estado.onchange = aplicarFiltros;
-filtro-partido.onchange = aplicarFiltros;
+// Eventos de Filtro
+elBusca.addEventListener('input', aplicarFiltros);
+elUf.addEventListener('change', aplicarFiltros);
+elPartido.addEventListener('change', aplicarFiltros);
 
-// MODO COMPARAÇÃO
 function toggleModoComparacao() {
     modoComparacao = !modoComparacao;
-
-    const btnGerar = document.getElementById("btn-gerar-comparacao");
-    btnGerar.style.display = modoComparacao ? "inline-block" : "none";
-
+    elBtnGerar.style.display = modoComparacao ? "inline-block" : "none";
     if (!modoComparacao) selecionados.clear();
-
     atualizarBotao();
     renderizarCards(todosDeputados);
 }
 
-// SELEÇÃO
 document.addEventListener("click", e => {
-    if (!modoComparacao) return;
-
     const btn = e.target.closest(".btn-selecionar");
-    if (!btn) return;
+    if (!btn || !modoComparacao) return;
 
     const id = Number(btn.dataset.id);
-
     if (selecionados.has(id)) {
         selecionados.delete(id);
     } else {
-        if (selecionados.size >= 4) {
-            toast("Máximo 4 deputados");
-            return;
-        }
+        if (selecionados.size >= 4) return toast("Máximo 4 deputados");
         selecionados.add(id);
     }
-
     atualizarBotao();
     renderizarCards(todosDeputados);
 });
 
-// BOTÃO
 function atualizarBotao() {
-    const btn = document.getElementById("btn-gerar-comparacao");
-
-    btn.innerText = `Gerar Comparação [${selecionados.size}/4]`;
-    btn.disabled = selecionados.size < 2;
+    elBtnGerar.innerText = `Gerar Comparação [${selecionados.size}/4]`;
+    elBtnGerar.disabled = selecionados.size < 2;
+    elBtnGerar.style.opacity = selecionados.size < 2 ? "0.5" : "1";
+    elBtnGerar.style.cursor = selecionados.size < 2 ? "not-allowed" : "pointer";
 }
 
-// EVENTO
-document.getElementById("btn-gerar-comparacao").addEventListener("click", gerarComparacao);
+elBtnGerar.addEventListener("click", gerarComparacao);
 
-// 🔥 GASTOS CORRIGIDO
 async function buscarGastos(id, callback) {
     let total = 0;
     const anos = [2026, 2025];
-
-    for (let ano of anos) {
-        let pagina = 1;
-
-        while (true) {
-            const res = await fetch(`https://dadosabertos.camara.leg.br/api/v2/deputados/${id}/despesas?ano=${ano}&pagina=${pagina}&itens=100`);
+    try {
+        for (let ano of anos) {
+            const res = await fetch(`https://dadosabertos.camara.leg.br/api/v2/deputados/${id}/despesas?ano=${ano}&itens=100`);
             const json = await res.json();
-
-            if (!json.dados || json.dados.length === 0) break;
-
-            json.dados.forEach(d => total += d.valorLiquido || 0);
-
-            pagina++;
+            if (json.dados) json.dados.forEach(d => total += d.valorLiquido || 0);
             callback(total);
         }
-    }
+    } catch (e) { console.error("Erro gastos:", e); }
 }
 
-// GERAR
 function gerarComparacao() {
     const base = todosDeputados.filter(d => selecionados.has(d.id));
-
-    const lista = base.map(d => ({
-        ...d,
-        gastos: "Carregando..."
-    }));
+    const lista = base.map(d => ({ ...d, gastos: "Carregando..." }));
 
     atualizarTabela(lista);
-    modal.style.display = "flex";
+    document.getElementById("modal").style.display = "flex";
 
     lista.forEach((d, i) => {
         buscarGastos(d.id, valor => {
@@ -240,40 +217,38 @@ function gerarComparacao() {
     });
 }
 
-// TABELA
 function atualizarTabela(lista) {
-    comparacao.innerHTML = `
-        <table style="width:100%; text-align:center;">
-            <tr>
-                <th>Foto</th>
-                ${lista.map(d => `<td><img src="${d.foto}" style="width:70px;height:70px;"></td>`).join('')}
+    document.getElementById("comparacao").innerHTML = `
+        <table border="1" style="width:100%; border-collapse:collapse; text-align:center;">
+            <tr style="background:#eee;">
+                <th style="padding:10px;">Critério</th>
+                ${lista.map(d => `<th style="padding:10px;">${d.nome}</th>`).join('')}
             </tr>
             <tr>
-                <th>Nome</th>
-                ${lista.map(d => `<td>${d.nome}</td>`).join('')}
+                <td><b>Foto</b></td>
+                ${lista.map(d => `<td><img src="${d.foto}" style="width:60px;"></td>`).join('')}
             </tr>
             <tr>
-                <th>Gastos</th>
+                <td><b>Partido/UF</b></td>
+                ${lista.map(d => `<td>${d.partido} - ${d.uf}</td>`).join('')}
+            </tr>
+            <tr>
+                <td><b>Gastos (25/26)</b></td>
                 ${lista.map(d => `<td>${typeof d.gastos === "number" ? d.gastos.toLocaleString('pt-BR',{style:'currency',currency:'BRL'}) : d.gastos}</td>`).join('')}
             </tr>
         </table>
     `;
 }
 
-// FECHAR
-function fecharModal() {
-    modal.style.display = "none";
-}
+function fecharModal() { document.getElementById("modal").style.display = "none"; }
 
-// TOAST
 function toast(msg) {
     const t = document.getElementById("toast");
     t.innerText = msg;
     t.classList.add("show");
-    setTimeout(() => t.classList.remove("show"), 2000);
+    setTimeout(() => t.classList.remove("show"), 2500);
 }
 
-// INIT
 carregarDeputados();
 </script>
 
