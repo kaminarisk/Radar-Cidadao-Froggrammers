@@ -54,8 +54,12 @@
 
         <!-- GRÁFICO -->
         <div class="card">
-            <h3 id="tituloGrafico" style="margin-bottom: 20px; color: var(--secondary);"></h3>
-            <canvas id="graficoPrincipal" style="width: 100%; height: 400px;"></canvas>
+            <h3 id="tituloGrafico" style="margin-bottom: 15px; color: var(--secondary);"></h3>
+
+            <!-- CONTROLE DE TAMANHO -->
+            <div style="position: relative; width: 100%; height: 350px;">
+                <canvas id="graficoPrincipal"></canvas>
+            </div>
         </div>
 
     </main>
@@ -72,6 +76,9 @@
                 const res = await fetch(`/api/gastos/${id}`);
                 const json = await res.json();
 
+                dadosCategoria = {};
+                dadosMes = Array(12).fill(0);
+
                 (json || []).forEach(g => {
 
                     dadosCategoria[g.tipoDespesa] =
@@ -82,6 +89,7 @@
                     }
                 });
 
+                // garante render inicial
                 atualizarGrafico();
 
             } catch (e) {
@@ -98,6 +106,9 @@
         }
 
         function atualizarGrafico() {
+
+            // evita erro antes dos dados
+            if (!Object.keys(dadosCategoria).length) return;
 
             const tipoGrafico = document.getElementById('tipoGrafico').value;
             const tipoDados = document.getElementById('tipoDados').value;
@@ -137,6 +148,7 @@
                 },
                 options: {
                     responsive: true,
+                    maintainAspectRatio: false, // ESSENCIAL PRA CONTROLAR ALTURA
                     plugins: {
                         legend: {
                             display: true
@@ -149,6 +161,7 @@
             });
         }
 
+        // inicia automaticamente
         carregarDados();
     </script>
 </body>
