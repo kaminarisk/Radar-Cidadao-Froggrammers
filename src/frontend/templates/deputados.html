@@ -5,7 +5,6 @@
     <title>Deputados | Portal SJC</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <style>
-        /* Garantindo que a Navbar não seja sobreposta */
         .navbar {
             position: sticky;
             top: 0;
@@ -15,7 +14,6 @@
         .toast { visibility: hidden; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #333; color: #fff; padding: 10px 20px; border-radius: 5px; }
         .toast.show { visibility: visible; }
         
-        /* ALTERAÇÃO: Grid fixo em 4 colunas */
         .grid { 
             display: grid; 
             grid-template-columns: repeat(4, 1fr); 
@@ -23,14 +21,12 @@
             padding: 20px 0; 
         }
 
-        /* Responsividade para telas menores */
         @media (max-width: 1024px) { .grid { grid-template-columns: repeat(2, 1fr); } }
         @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } }
 
         .card { border: 1px solid #ddd; padding: 15px; border-radius: 8px; background: #fff; transition: 0.3s; }
         .card:hover { box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
 
-        /* Estilo para o link/botão "Ver Perfil" */
         .btn-perfil {
             display: inline-block;
             margin-top: 10px;
@@ -44,9 +40,7 @@
             border: none;
             cursor: pointer;
         }
-        .btn-perfil:hover {
-            background-color: #08306b;
-        }
+        .btn-perfil:hover { background-color: #08306b; }
 
         .btn-selecionar-modo {
             display: inline-block;
@@ -69,7 +63,6 @@
     <a href="/" class="logo" style="color:white; text-decoration:none; font-weight:bold; font-size: 1.5rem;">
         PORTAL<span style="color:#ff9800;">SJC</span>
     </a>
-
     <nav>
         <ul style="display:flex; gap:20px; list-style:none; margin:0; padding:0;">
             <li><a href="/" style="color:white; text-decoration:none;">Home</a></li>
@@ -86,19 +79,15 @@
 
     <div class="filter-bar" style="background:#f4f4f4; padding:20px; border-radius:8px; margin-bottom:20px; display: flex; gap: 10px; align-items: center;">
         <input type="text" id="busca-nome" placeholder="Buscar deputado..." style="padding:8px; flex: 1; border: 1px solid #ccc; border-radius: 4px;">
-
         <select id="filtro-estado" style="padding:8px; border: 1px solid #ccc; border-radius: 4px;">
             <option value="">Todos Estados</option>
         </select>
-
         <select id="filtro-partido" style="padding:8px; border: 1px solid #ccc; border-radius: 4px;">
             <option value="">Todos Partidos</option>
         </select>
-
         <button id="btn-modo" onclick="toggleModoComparacao()" style="padding:10px 15px; cursor:pointer; background: #333; color: white; border: none; border-radius: 4px;">
             Comparar Deputados
         </button>
-
         <button id="btn-gerar-comparacao" disabled style="display:none; padding:10px 15px; background:#ff9800; border:none; color:white; font-weight:bold; border-radius: 4px;">
             Gerar Comparação [0/4]
         </button>
@@ -107,7 +96,6 @@
     <div id="lista-deputados" class="grid"></div>
 </main>
 
-<!-- MODAL COMPARACAO -->
 <div id="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); justify-content:center; align-items:center; z-index:2000;">
     <div style="background:white; padding:20px; border-radius:10px; width:95%; max-width:900px; position:relative; overflow-x:auto;">
         <button onclick="fecharModal()" style="position:absolute; top:10px; right:10px; background:red; color:white; border:none; padding:5px 10px; cursor:pointer; font-weight:bold;">X</button>
@@ -143,13 +131,11 @@ async function carregarDeputados() {
         let res = await fetch('/api/deputados').catch(() => fetch('https://dadosabertos.camara.leg.br/api/v2/deputados?ordem=ASC&ordenarPor=nome'));
         const json = await res.json();
         const lista = Array.isArray(json) ? json : (json.dados || []);
-        
         todosDeputados = lista.map(normalizarDeputado);
         popularFiltros();
         renderizarCards(todosDeputados);
     } catch (err) {
         elContagem.innerText = "Erro ao carregar dados.";
-        console.error(err);
     }
 }
 
@@ -225,27 +211,52 @@ function atualizarBotao() {
 
 elBtnGerar.addEventListener("click", gerarComparacao);
 
+/** 
+ * FUNÇÃO CORRIGIDA: Agora faz a paginação automática para pegar TODOS os gastos
+ */
 async function buscarGastos(id, callback) {
-    let total = 0;
-    const anos = [2026, 2025];
-    try {
-        for (let ano of anos) {
-            const res = await fetch(`https://dadosabertos.camara.leg.br/api/v2/deputados/${id}/despesas?ano=${ano}&itens=100`);
-            const json = await res.json();
-            if (json.dados) json.dados.forEach(d => total += d.valorLiquido || 0);
-            callback(total);
+    let totalAcumulado = 0;
+    const anos = [2025, 2026];
+
+    for (let ano of anos) {
+        // Aumentamos para 100 itens por página para ser mais rápido
+        let url = `https://dadosabertos.camara.leg.br/api/v2/deputados/${id}/despesas?ano=${ano}&itens=100&ordem=ASC&ordenarPor=ano`;
+        
+        while (url) {
+            try {
+                const res = await fetch(url);
+                const json = await res.json();
+                
+                if (json.dados) {
+                    json.dados.forEach(d => {
+                        totalAcumulado += d.valorLiquido || 0;
+                    });
+                }
+
+                // Verifica se existe link para a próxima página
+                const nextLink = json.links ? json.links.find(l => l.rel === 'next') : null;
+                url = nextLink ? nextLink.href : null;
+                
+                // Envia o progresso parcial para a tabela (opcional)
+                callback(totalAcumulado);
+
+            } catch (e) {
+                console.error("Erro na paginação de gastos:", e);
+                url = null; // Para o loop em caso de erro crítico
+            }
         }
-    } catch (e) { console.error("Erro gastos:", e); }
+    }
 }
 
 function gerarComparacao() {
     const base = todosDeputados.filter(d => selecionados.has(d.id));
-    const lista = base.map(d => ({ ...d, gastos: "Carregando..." }));
+    const lista = base.map(d => ({ ...d, gastos: "Calculando..." }));
     atualizarTabela(lista);
     document.getElementById("modal").style.display = "flex";
+    
     lista.forEach((d, i) => {
-        buscarGastos(d.id, valor => {
-            lista[i].gastos = valor;
+        buscarGastos(d.id, valorTotal => {
+            lista[i].gastos = valorTotal;
             atualizarTabela(lista);
         });
     });
@@ -267,7 +278,7 @@ function atualizarTabela(lista) {
                 ${lista.map(d => `<td>${d.partido} - ${d.uf}</td>`).join('')}
             </tr>
             <tr>
-                <td><b>Gastos (2025/2026)</b></td>
+                <td><b>Total Gasto (25/26)</b><br><small>(Soma de todas as páginas)</small></td>
                 ${lista.map(d => `<td>${typeof d.gastos === "number" ? d.gastos.toLocaleString('pt-BR',{style:'currency',currency:'BRL'}) : d.gastos}</td>`).join('')}
             </tr>
         </table>
@@ -284,6 +295,5 @@ function toast(msg) {
 
 carregarDeputados();
 </script>
-
 </body>
 </html>
