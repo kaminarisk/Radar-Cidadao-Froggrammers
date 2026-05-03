@@ -34,7 +34,7 @@
 
                 <div>
                     <label>Nome do Deputado</label>
-                    <input type="text" id="nome-busca" list="lista-deputados" placeholder="Digite o nome..."
+                    <input type="text" id="nome-busca" list="lista-deputados" placeholder="Carregando lista..."
                         style="width:100%; padding:10px; border-radius:5px;" autocomplete="off">
                     <datalist id="lista-deputados"></datalist>
                 </div>
@@ -77,24 +77,35 @@
 <script>
     let mapaDeputados = {};
 
-    // Função original restaurada para carregar a lista de nomes corretamente
+    // Função robusta para carregar os deputados no datalist
     async function carregarSugestoes() {
         const datalist = document.getElementById('lista-deputados');
+        const inputBusca = document.getElementById('nome-busca');
+        
         try {
             const res = await fetch("https://dadosabertos.camara.leg.br/api/v2/deputados?ordem=ASC&ordenarPor=nome");
             const json = await res.json();
             
-            json.dados.forEach(dep => {
-                const opt = document.createElement('option');
-                opt.value = dep.nome;
-                datalist.appendChild(opt);
-                // Mapeamento seguro: Nome exato para ID
-                mapaDeputados[dep.nome] = dep.id;
-            });
-        } catch (e) { console.error("Erro ao carregar lista:", e); }
+            if (json.dados) {
+                datalist.innerHTML = ""; // Limpa qualquer resquício
+                json.dados.forEach(dep => {
+                    const opt = document.createElement('option');
+                    opt.value = dep.nome;
+                    datalist.appendChild(opt);
+                    // Mapeia o Nome para o ID para uso na busca
+                    mapaDeputados[dep.nome] = dep.id;
+                });
+                inputBusca.placeholder = "Digite o nome...";
+                console.log("Lista de deputados carregada com sucesso.");
+            }
+        } catch (e) {
+            console.error("Erro ao carregar lista de deputados:", e);
+            inputBusca.placeholder = "Erro ao carregar nomes.";
+        }
     }
 
-    carregarSugestoes();
+    // Garante que a lista carregue assim que a página abrir
+    document.addEventListener('DOMContentLoaded', carregarSugestoes);
 
     async function buscarRelatorio() {
         const nomeSelecionado = document.getElementById('nome-busca').value.trim();
@@ -103,7 +114,7 @@
         const id = mapaDeputados[nomeSelecionado];
 
         if (!id) {
-            alert("Por favor, selecione um deputado da lista.");
+            alert("Por favor, selecione um deputado da lista oficial.");
             return;
         }
 
@@ -115,7 +126,6 @@
 
         try {
             if (tipoBusca === "proposicoes") {
-                // Endpoint de Proposições filtrado apenas pelo autor escolhido
                 const url = `https://dadosabertos.camara.leg.br/api/v2/proposicoes?idDeputadoAutor=${id}&ano=${ano}&ordem=DESC&ordenarPor=id`;
                 const res = await fetch(url);
                 const json = await res.json();
@@ -143,7 +153,6 @@
                 `).join('');
 
             } else {
-                // Lógica de Despesas original
                 let pagina = 1;
                 let todos = [];
                 while (true) {
@@ -152,11 +161,11 @@
                     if (!json.dados || !json.dados.length) break;
                     todos = todos.concat(json.dados);
                     pagina++;
-                    if (pagina > 20) break; 
+                    if (pagina > 15) break; 
                 }
 
                 if (!todos.length) {
-                    tabela.innerHTML = `<tr><td colspan="2" style="padding:20px; text-align:center;">Nenhum gasto encontrado.</td></tr>`;
+                    tabela.innerHTML = `<tr><td colspan="2" style="padding:20px; text-align:center;">Nenhum gasto encontrado para este ano.</td></tr>`;
                     return;
                 }
 
@@ -181,7 +190,7 @@
 
         } catch (e) {
             console.error(e);
-            tabela.innerHTML = `<tr><td colspan="2" style="padding:20px; text-align:center; color:red;">Erro ao carregar dados.</td></tr>`;
+            tabela.innerHTML = `<tr><td colspan="2" style="padding:20px; text-align:center; color:red;">Erro ao conectar com o servidor da Câmara.</td></tr>`;
         }
     }
 </script>
