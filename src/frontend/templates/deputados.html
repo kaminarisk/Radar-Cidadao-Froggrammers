@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
+<div id="toast" class="toast"></div>
     <header class="navbar">
         <a href="/" class="logo">RADAR<span>CIDADÃO</span></a>
 
@@ -18,22 +19,6 @@
             </ul>
         </nav>
     </header>
-
-<div id="toast" class="toast"></div>
-
-<header class="navbar" style="display:flex; justify-content:space-between; align-items:center; padding:15px 30px; background:#0d47a1;">
-    <a href="/" class="logo" style="color:white; text-decoration:none; font-weight:bold; font-size: 1.5rem;">
-        RADAR<span style="color:#ff9800;">CIDADÃO</span>
-    </a>
-    <nav>
-        <ul style="display:flex; gap:20px; list-style:none; margin:0; padding:0;">
-            <li><a href="/" style="color:white; text-decoration:none;">Home</a></li>
-            <li><a href="/deputados.html" style="color:#ff9800; text-decoration:none; font-weight:bold;">Deputados</a></li>
-            <li><a href="/relatorios.html" style="color:white; text-decoration:none;">Relatórios</a></li>
-            <li><a href="/graficos.html" style="color:white; text-decoration:none;">Gráficos</a></li>
-        </ul>
-    </nav>
-</header>
 
 <main class="container" style="padding: 20px 5%;">
     <h1>Representantes na Câmara Federal</h1>
