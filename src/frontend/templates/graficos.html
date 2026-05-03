@@ -28,6 +28,164 @@
         </h2>
 
         <!-- CONTROLES -->
+        <div class="card" style="margin-bottom: 25px;">
+            <div style="display:flex; gap:20px; flex-wrap:wrap; align-items:center;">
+
+                <div>
+                    <label style="color:var(--secondary);">Tipo de gráfico</label><br>
+                    <select id="tipoGrafico">
+                        <option value="bar">Barras</option>
+                        <option value="line">Linha</option>
+                        <option value="radar">Radar</option>
+                        <option value="polarArea">Polar Area</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label style="color:var(--secondary);">Visualizar</label><br>
+                    <select id="tipoDados">
+                        <option value="categoria">Por Categoria</option>
+                        <option value="mes">Por Mês</option>
+                    </select>
+                </div>
+
+                <button onclick="atualizarGrafico()" style="margin-top:18px;">
+                    Atualizar
+                </button>
+
+            </div>
+        </div>
+
+        <!-- GRÁFICO -->
+        <div class="card">
+            <h3 id="tituloGrafico" style="margin-bottom: 20px; color: var(--secondary);"></h3>
+            <canvas id="graficoPrincipal" style="width: 100%; height: 400px;"></canvas>
+        </div>
+
+    </main>
+
+    <script>
+        const id = new URLSearchParams(window.location.search).get('id') || '160976';
+
+        let dadosCategoria = {};
+        let dadosMes = Array(12).fill(0);
+        let graficoAtual = null;
+
+        async function carregarDados() {
+            try {
+                const res = await fetch(`/api/gastos/${id}`);
+                const json = await res.json();
+
+                (json || []).forEach(g => {
+
+                    dadosCategoria[g.tipoDespesa] =
+                        (dadosCategoria[g.tipoDespesa] || 0) + g.valorLiquido;
+
+                    if (g.mes >= 1 && g.mes <= 12) {
+                        dadosMes[g.mes - 1] += g.valorLiquido;
+                    }
+                });
+
+                atualizarGrafico();
+
+            } catch (e) {
+                console.error("erro ao carregar dados", e);
+            }
+        }
+
+        function gerarCores(qtd) {
+            const cores = [];
+            for (let i = 0; i < qtd; i++) {
+                cores.push(`hsl(${i * 40}, 70%, 50%)`);
+            }
+            return cores;
+        }
+
+        function atualizarGrafico() {
+
+            const tipoGrafico = document.getElementById('tipoGrafico').value;
+            const tipoDados = document.getElementById('tipoDados').value;
+
+            let labels = [];
+            let valores = [];
+            let titulo = '';
+
+            if (tipoDados === 'categoria') {
+                labels = Object.keys(dadosCategoria);
+                valores = Object.values(dadosCategoria);
+                titulo = 'Gastos por Categoria (R$)';
+            } else {
+                labels = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+                valores = dadosMes;
+                titulo = 'Gastos por Mês (2025)';
+            }
+
+            document.getElementById("tituloGrafico").innerText = titulo;
+
+            if (graficoAtual) {
+                graficoAtual.destroy();
+            }
+
+            graficoAtual = new Chart(document.getElementById('graficoPrincipal'), {
+                type: tipoGrafico,
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: titulo,
+                        data: valores,
+                        backgroundColor: gerarCores(valores.length),
+                        borderColor: '#0d47a1',
+                        borderWidth: 2,
+                        fill: tipoGrafico === 'line'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: true
+                        }
+                    },
+                    scales: (tipoGrafico === 'bar' || tipoGrafico === 'line') ? {
+                        y: { beginAtZero: true }
+                    } : {}
+                }
+            });
+        }
+
+        carregarDados();
+    </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Gráficos Financeiros | Radar Cidadão</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <header class="navbar">
+        <a href="/" class="logo">RADAR<span>CIDADÃO</span></a>
+
+        <nav>
+            <ul class="nav-links">
+                <li><a href="/">Home</a></li>
+                <li><a href="/deputados.html">Deputados</a></li>
+                <li><a href="/relatorios.html">Relatórios</a></li>
+                <li><a href="/graficos.html" class="active">Gráficos</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container">
+        <h2 style="margin-bottom: 30px; color: var(--primary);">
+            Análise de Gastos Personalizada
+        </h2>
+
+        <!-- CONTROLES -->
         <div class="card" style="margin-bottom:20px;">
             <label>Tipo de gráfico:</label>
             <select id="tipoGrafico">
