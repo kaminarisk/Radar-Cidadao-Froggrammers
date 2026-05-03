@@ -73,17 +73,31 @@ const btnGerar = document.getElementById("btn-gerar-comparacao");
 const modal = document.getElementById("modal-comparacao");
 const conteudo = document.getElementById("conteudo-comparacao");
 
+// 🔥 NORMALIZADOR UNIVERSAL (resolve teu problema)
+function normalizarDeputado(d) {
+    return {
+        id: d.id,
+        nome: d.nome,
+        foto: d.urlFoto || d.foto || "",
+        partido: d.siglaPartido || d.partido || "-",
+        uf: d.siglaUf || d.uf || "-"
+    };
+}
+
 // CARREGAR API
 async function carregarDeputados() {
     try {
         const res = await fetch('/api/deputados');
         const json = await res.json();
 
-        todosDeputados = Array.isArray(json) ? json : json.dados || [];
+        const dados = Array.isArray(json) ? json : json.dados || [];
+
+        // 🔥 aplica normalização aqui
+        todosDeputados = dados.map(normalizarDeputado);
 
         contagem.innerText = `${todosDeputados.length} deputados`;
 
-        popularFiltros(todosDeputados);
+        popularFiltros();
         renderizarCards(todosDeputados);
 
     } catch (e) {
@@ -93,19 +107,19 @@ async function carregarDeputados() {
 }
 
 // FILTROS
-function popularFiltros(dados) {
+function popularFiltros() {
     filtroEstado.innerHTML = '<option value="">Estado</option>';
     filtroPartido.innerHTML = '<option value="">Partido</option>';
 
-    const estados = [...new Set(dados.map(d => d.siglaUf))].sort();
-    const partidos = [...new Set(dados.map(d => d.siglaPartido))].sort();
+    const estados = [...new Set(todosDeputados.map(d => d.uf))].sort();
+    const partidos = [...new Set(todosDeputados.map(d => d.partido))].sort();
 
     estados.forEach(uf => {
-        filtroEstado.innerHTML += `<option value="${uf}">${uf}</option>`;
+        if (uf !== "-") filtroEstado.innerHTML += `<option value="${uf}">${uf}</option>`;
     });
 
     partidos.forEach(p => {
-        filtroPartido.innerHTML += `<option value="${p}">${p}</option>`;
+        if (p !== "-") filtroPartido.innerHTML += `<option value="${p}">${p}</option>`;
     });
 }
 
@@ -116,12 +130,12 @@ function renderizarCards(lista) {
     container.innerHTML = lista.map(d => `
         <div class="card" style="border:${selecionados.has(d.id) ? '2px solid orange' : '1px solid #ddd'}">
 
-            <img src="${d.urlFoto}" 
+            <img src="${d.foto}" 
                  style="width:100%; height:260px; object-fit:cover; border-radius:8px;"
                  onerror="this.src='https://www.camara.leg.br/tema/assets/images/foto-deputado-ausente.png'">
 
             <h3>${d.nome}</h3>
-            <p>${d.siglaPartido} - ${d.siglaUf}</p>
+            <p>${d.partido} - ${d.uf}</p>
 
             ${
                 modoComparacao
@@ -143,8 +157,8 @@ function aplicarFiltros() {
 
     const filtrados = todosDeputados.filter(d =>
         d.nome.toLowerCase().includes(nome) &&
-        (estado === "" || d.siglaUf === estado) &&
-        (partido === "" || d.siglaPartido === partido)
+        (estado === "" || d.uf === estado) &&
+        (partido === "" || d.partido === partido)
     );
 
     contagem.innerText = `${filtrados.length} deputados`;
@@ -196,7 +210,6 @@ function atualizarBotao() {
     const qtd = selecionados.size;
 
     btnGerar.innerText = `Gerar Comparação [${qtd}/8]`;
-
     btnGerar.disabled = qtd < 2;
     btnGerar.style.opacity = qtd < 2 ? "0.5" : "1";
 }
@@ -218,11 +231,11 @@ btnGerar.onclick = () => {
             <tbody>
                 <tr>
                     <td><strong>Partido</strong></td>
-                    ${lista.map(d => `<td>${d.siglaPartido}</td>`).join('')}
+                    ${lista.map(d => `<td>${d.partido}</td>`).join('')}
                 </tr>
                 <tr>
                     <td><strong>UF</strong></td>
-                    ${lista.map(d => `<td>${d.siglaUf}</td>`).join('')}
+                    ${lista.map(d => `<td>${d.uf}</td>`).join('')}
                 </tr>
                 <tr>
                     <td><strong>ID</strong></td>
