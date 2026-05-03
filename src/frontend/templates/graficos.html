@@ -33,7 +33,7 @@
 
                 <div>
                     <label style="color:var(--secondary);">Tipo de gráfico</label><br>
-                    <select id="tipoGrafico">
+                    <select id="tipoGrafico" onchange="atualizarGrafico()">
                         <option value="bar">Barras</option>
                         <option value="line">Linha</option>
                         <option value="radar">Radar</option>
@@ -43,15 +43,11 @@
 
                 <div>
                     <label style="color:var(--secondary);">Visualizar</label><br>
-                    <select id="tipoDados">
+                    <select id="tipoDados" onchange="atualizarGrafico()">
                         <option value="categoria">Por Categoria</option>
                         <option value="mes">Por Mês</option>
                     </select>
                 </div>
-
-                <button onclick="atualizarGrafico()" style="margin-top:18px;">
-                    Atualizar
-                </button>
 
             </div>
         </div>
