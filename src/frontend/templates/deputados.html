@@ -171,37 +171,42 @@ function atualizarBotao() {
     elBtnGerar.style.cursor = selecionados.size < 2 ? "not-allowed" : "pointer";
 }
 
-// LÓGICA DE GASTOS MELHORADA: PERCORRE TODAS AS PÁGINAS SEM EXCEÇÃO
+// LÓGICA DE GASTOS DEFINITIVA: Itera por ano e por mês para garantir precisão total
 async function calcularGastoTotalRigoroso(id) {
     let total = 0;
     const anos = [2025, 2026];
+    const meses = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 
     for (let ano of anos) {
-        // Buscamos 100 itens por vez (máximo da API) para ser mais rápido
-        let url = `https://dadosabertos.camara.leg.br/api/v2/deputados/${id}/despesas?ano=${ano}&itens=100&ordem=ASC&ordenarPor=ano`;
-        
-        while (url) {
-            try {
-                const res = await fetch(url);
-                if (!res.ok) throw new Error("Erro na rede");
-                const json = await res.json();
-                
-                if (json.dados && json.dados.length > 0) {
-                    json.dados.forEach(d => {
-                        total += (d.valorLiquido || 0);
-                    });
+        for (let mes of meses) {
+            // Em 2026, para o loop no mês atual (Maio)
+            if (ano === 2026 && mes > 5) break;
+
+            let url = `https://dadosabertos.camara.leg.br/api/v2/deputados/${id}/despesas?ano=${ano}&mes=${mes}&itens=100&ordem=ASC&ordenarPor=ano`;
+            
+            while (url) {
+                try {
+                    const res = await fetch(url);
+                    if (!res.ok) break;
+                    const json = await res.json();
+                    
+                    if (json.dados && json.dados.length > 0) {
+                        json.dados.forEach(d => {
+                            // Soma o valor líquido (o que foi efetivamente pago/reembolsado)
+                            total += (d.valorLiquido || 0);
+                        });
+                    }
+
+                    // Se o mês tiver mais de 100 notas, navega para a próxima página do mês
+                    const nextLink = json.links ? json.links.find(l => l.rel === 'next') : null;
+                    url = nextLink ? nextLink.href : null;
+                    
+                    if (url) await new Promise(r => setTimeout(r, 20));
+
+                } catch (e) {
+                    console.error(`Erro ao processar mês ${mes}/${ano}:`, e);
+                    url = null;
                 }
-
-                // Verifica se existe link para a PRÓXIMA página (fundamental para gastos altos)
-                const nextLink = json.links ? json.links.find(l => l.rel === 'next') : null;
-                url = nextLink ? nextLink.href : null;
-                
-                // Delay para não ser bloqueado por excesso de requisições
-                if (url) await new Promise(r => setTimeout(r, 50));
-
-            } catch (e) {
-                console.error(`Erro ao processar gastos do ano ${ano}:`, e);
-                url = null; // Interrompe o loop do ano em caso de erro crítico
             }
         }
     }
@@ -210,17 +215,15 @@ async function calcularGastoTotalRigoroso(id) {
 
 async function gerarComparacao() {
     const base = todosDeputados.filter(d => selecionados.has(d.id));
-    // Inicializa a tabela com estado de carregamento
-    const listaParaExibir = base.map(d => ({ ...d, gastos: "Calculando..." }));
+    const listaParaExibir = base.map(d => ({ ...d, gastos: "Somando meses..." }));
     
     atualizarTabela(listaParaExibir);
     document.getElementById("modal").style.display = "flex";
     
-    // Processa cada deputado da comparação
     for (let i = 0; i < listaParaExibir.length; i++) {
         const valorFinal = await calcularGastoTotalRigoroso(listaParaExibir[i].id);
         listaParaExibir[i].gastos = valorFinal;
-        atualizarTabela(listaParaExibir); // Atualiza a UI em tempo real
+        atualizarTabela(listaParaExibir);
     }
 }
 
@@ -240,7 +243,7 @@ function atualizarTabela(lista) {
                 ${lista.map(d => `<td>${d.partido} - ${d.uf}</td>`).join('')}
             </tr>
             <tr>
-                <td><b>Total Gasto (25/26)</b><br><small>Soma de todas as páginas da API</small></td>
+                <td><b>Total Gasto (25/26)</b><br><small>Soma rigorosa mês a mês</small></td>
                 ${lista.map(d => `
                     <td style="font-weight:${typeof d.gastos === 'number' ? 'bold' : 'normal'}; color:${typeof d.gastos === 'number' ? '#d32f2f' : '#666'}">
                         ${typeof d.gastos === 'number' ? d.gastos.toLocaleString('pt-BR',{style:'currency',currency:'BRL'}) : d.gastos}
