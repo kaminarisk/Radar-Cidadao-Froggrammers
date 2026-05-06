@@ -103,11 +103,6 @@ O foco também está na organização das informações de forma intuitiva, util
       <td><a href="https://www.linkedin.com/in/heitor-da-hora-206051400/"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white"></a></td>
     </tr>
    <tr>
-      <td>Pedro Rebecca</td>
-      <td>Desenvolvedor</td>
-      <td><a href="https://github.com/pedrorml07"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a></td>
-      <td><a href="https://www.linkedin.com/in/pedro-lima-716015219"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white"></a></td>
-    </tr>
    <tr>
       <td>Guilherme Moraes</td>
       <td>Desenvolvedor</td>
