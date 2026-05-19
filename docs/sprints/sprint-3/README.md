@@ -14,10 +14,10 @@ Nesta sprint, o foco esteve na implementação de funcionalidades comparativas e
 
 | Rank | Prioridade | User Story | Sprint | Status |
 |------|-----------|------------|--------|--------|
-| 8 | Média | Média de Indicadores Parlamentares | Como jornalista ou professor, quero visualizar a média de presença ou gastos da Câmara para contextualizar os dados de um deputado | 2 | 🟡 |
-| 9 | Média | Ranking de Deputados | Como jornalista, quero visualizar um ranking de deputados com base em indicadores para identificar padrões de atuação | 3 | 🟡 |
-| 10 | Baixa | Favoritar Deputados | Como eleitor, quero favoritar deputados para acompanhar suas informações com mais facilidade | 3 | 🔴 |
-| 11 | Baixa | Compartilhamento de Informações | Como jornalista, quero compartilhar dados sobre deputados para divulgar informações relevantes | 3 | 🔴 |
+| 8 | Média | Como jornalista ou professor, quero visualizar a média de presença ou gastos da Câmara para contextualizar os dados de um deputado | 2 | 🟡 |
+| 9 | Média | Como jornalista, quero visualizar um ranking de deputados com base em indicadores para identificar padrões de atuação | 3 | 🟡 |
+| 10 | Baixa | Como eleitor, quero favoritar deputados para acompanhar suas informações com mais facilidade | 3 | 🔴 |
+| 11 | Baixa | Como jornalista, quero compartilhar dados sobre deputados para divulgar informações relevantes | 3 | 🔴 |
 
 ---
 
