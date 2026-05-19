@@ -91,12 +91,6 @@ O foco também está na organização das informações de forma intuitiva, util
       <td><a href="https://www.linkedin.com/in/lucas-lemes-ramos-9a9661251/"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white"></a></td>
     </tr>
     <tr>
-      <td>Giovanna Noccerino</td>
-      <td>Desenvolvedor</td>
-      <td><a href="https://github.com/GiNDF"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a></td>
-      <td><a href="https://br.linkedin.com/in/giovanna-noccerino-de-freitas-221aa8401"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white"></a></td>
-    </tr>
-    <tr>
       <td>Heitor da Hora</td>
       <td>Desenvolvedor</td>
       <td><a href="https://github.com/heitorhora1910"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a></td>

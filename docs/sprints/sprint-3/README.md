@@ -1,14 +1,12 @@
-# 📅 Documentação - Sprint 2
+# 📅 Documentação - Sprint 3
 
-> Status da Sprint: Finalizada 🟢
+> Status da Sprint: Em andamento 🟡
 
 ## 🏅 Desafio
 
-Evoluir a aplicação Radar Cidadão, aprimorando a qualidade e a relevância dos dados apresentados sobre os deputados, além de introduzir funcionalidades de comparação entre parlamentares.  
+Evoluir a aplicação Radar Cidadão com correções e melhorias voltadas à visualização e análise de dados parlamentares.
 
-Nesta sprint, o foco está no ajuste e refinamento das informações exibidas, especialmente na filtragem dos gastos parlamentares, priorizando dados mais relevantes como fornecedores, em vez de categorias genéricas. Também foram implementadas melhorias na apresentação do resumo dos deputados, incluindo dados como presença em sessões e quantidade de projetos apresentados.  
-
-Além disso, foi desenvolvida a funcionalidade de comparação entre deputados, permitindo analisar indicadores como gastos totais, presença e número de projetos, tornando a interpretação dos dados mais clara e útil para o usuário.
+Nesta sprint, o foco esteve na implementação de funcionalidades comparativas e no aprimoramento da experiência do usuário, incluindo médias de indicadores da Câmara, ranking de deputados e melhorias na organização das informações exibidas. Também foram planejadas funcionalidades de personalização e compartilhamento, tornando a plataforma mais útil e acessível para acompanhamento da atuação parlamentar.
 
 ---
 
@@ -16,9 +14,10 @@ Além disso, foi desenvolvida a funcionalidade de comparação entre deputados, 
 
 | Rank | Prioridade | User Story | Sprint | Status |
 |------|-----------|------------|--------|--------|
-| 6 | Alta | Como eleitor, quero comparar indicadores de diferentes deputados para avaliar suas performances (META) | 2 | 🟢 |
-| 7 | Média | Como jornalista, quero visualizar os projetos de lei apresentados por um deputado para analisar sua atuação legislativa | 2 | 🟢 |
-| 8 | Média | Como jornalista ou professor, quero visualizar a média de presença ou gastos da Câmara para contextualizar os dados de um deputado | 2 | 🟡 |
+| 8 | Média | Média de Indicadores Parlamentares | Como jornalista ou professor, quero visualizar a média de presença ou gastos da Câmara para contextualizar os dados de um deputado | 2 | 🟡 |
+| 9 | Média | Ranking de Deputados | Como jornalista, quero visualizar um ranking de deputados com base em indicadores para identificar padrões de atuação | 3 | 🟡 |
+| 10 | Baixa | Favoritar Deputados | Como eleitor, quero favoritar deputados para acompanhar suas informações com mais facilidade | 3 | 🔴 |
+| 11 | Baixa | Compartilhamento de Informações | Como jornalista, quero compartilhar dados sobre deputados para divulgar informações relevantes | 3 | 🔴 |
 
 ---
 
